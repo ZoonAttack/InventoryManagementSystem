@@ -41,7 +41,7 @@ namespace ProductsManagement.Controllers
                 if (user is not null && await _userManager.CheckPasswordAsync(user, loginDto.Password))
                 {
                     var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault() ?? "user";
-
+                    //Console.WriteLine(role);
                     var tokenHandler = new JwtSecurityTokenHandler();
                     var tokenDescriptor = new SecurityTokenDescriptor
                     {

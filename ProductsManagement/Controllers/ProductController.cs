@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProductsManagement.Context;
 using ProductsManagement.Data;
@@ -50,6 +51,8 @@ namespace ProductsManagement.Controllers
             return Ok(productDto);
         }
 
+
+        //[Authorize(Roles = "admin")]
         [HttpPost("product")]
         public async Task<IActionResult> CreateProduct([FromBody] CreateProductDto dto)
         {
@@ -61,11 +64,52 @@ namespace ProductsManagement.Controllers
                 ImageUrl = dto.ImageUrl,
                 CategoryId = dto.CategoryId
             };
+            try
+            {
+                _dbContext.Products.Add(product);
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                return BadRequest($"Error creating product: {ex.Message}");
+            }
+            return Ok(product);
+        }
+        
+        
+        [Authorize(Roles = "admin")]
+        [HttpPut("product/{productId}")]
+        public async Task<IActionResult> UpdateProduct(int productId, [FromBody] CreateProductDto dto)
+        {
+            var product = await _dbContext.Products.FindAsync(productId);
+            if (product == null)
+                return NotFound($"Product with ID {productId} not found.");
 
-            _dbContext.Products.Add(product);
+            product.Name = dto.Name;
+            product.Description = dto.Description;
+            product.Price = dto.Price;
+            product.ImageUrl = dto.ImageUrl;
+            product.CategoryId = dto.CategoryId;
+            _dbContext.Products.Update(product);
             await _dbContext.SaveChangesAsync();
             return Ok(product);
         }
 
+        [Authorize(Roles = "admin")]
+        [HttpDelete("product/{productId}")]
+        public IActionResult DeleteProduct(int productId)
+        {
+            var product = _dbContext.Products.Find(productId);
+            if (product == null)
+                return NotFound($"Product with ID {productId} not found.");
+
+            // Check if the product is associated with any order items
+            if (product.OrderItems != null && product.OrderItems.Any())
+                return BadRequest($"Product with ID {productId} cannot be deleted because it is associated with existing orders.(Consider marking it as out of stock)");
+
+            _dbContext.Products.Remove(product);
+            _dbContext.SaveChanges();
+            return Ok($"Product with ID {productId} deleted successfully.");
+        }
     }
 }
