@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ProductsManagement.Context;
 using ProductsManagement.Data;
+using ProductsManagement.Data.Utility;
 
 namespace ProductsManagement
 {
@@ -34,6 +35,8 @@ namespace ProductsManagement
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.Configure<JWTSettings>(builder.Configuration.GetSection("JwtSettings"));
 
             var app = builder.Build();
 

@@ -1,9 +1,14 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using ProductsManagement.Context;
 using ProductsManagement.Data;
+using ProductsManagement.Data.Utility;
 using ProductsManagement.DTOs;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace ProductsManagement.Controllers
 {
@@ -11,40 +16,59 @@ namespace ProductsManagement.Controllers
     [ApiController]
     public class AccountController : Controller
     {
+        private readonly JWTSettings _jwtSettings;
+
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
         private readonly ApplicationDbContext _dbContext;
 
-        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager, ApplicationDbContext dbContext)
+        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager, ApplicationDbContext dbContext, IOptions<JWTSettings> JWTOptions)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _dbContext = dbContext;
+
+            _jwtSettings = JWTOptions.Value;
+
         }
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginUserDto loginDto)
         {
             if (ModelState.IsValid)
             {
-                User user = await _userManager.FindByEmailAsync(loginDto.Email);
-
-                if (user is not null)
+                var user = await _userManager.FindByEmailAsync(loginDto.Email);
+                if (user is not null && await _userManager.CheckPasswordAsync(user, loginDto.Password))
                 {
-                    bool exist = await _userManager.CheckPasswordAsync(user, loginDto.Password);
-                    if (exist)
-                    {
-                    }
-                    else
-                    {
+                    var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault() ?? "user";
 
-                    }
+                    var tokenHandler = new JwtSecurityTokenHandler();
+                    var tokenDescriptor = new SecurityTokenDescriptor
+                    {
+                        Subject = new ClaimsIdentity(new[]
+                        {
+                        new Claim(ClaimTypes.NameIdentifier, user.Id),
+                        new Claim(ClaimTypes.Email, user.Email),
+                        new Claim(ClaimTypes.Role, role)
+                    }),
+                        Expires = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpireMinutes),
+                        Issuer = _jwtSettings.Issuer,
+                        Audience = _jwtSettings.Audience,
+                        SigningCredentials = new SigningCredentials(
+                            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key)),
+                            SecurityAlgorithms.HmacSha256)
+                    };
+
+                    var token = tokenHandler.CreateToken(tokenDescriptor);
+                    return Ok(new { token = tokenHandler.WriteToken(token), role });
                 }
-                else
-                {
-                    return NotFound(new { errors = new[] { "User not found" } });
-                }
+
+                return Unauthorized(new { errors = new[] { "Invalid credentials" } });
             }
-            return BadRequest(new { errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
+
+            return BadRequest(new
+            {
+                errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)
+            });
         }
 
         [HttpPost("register")]
