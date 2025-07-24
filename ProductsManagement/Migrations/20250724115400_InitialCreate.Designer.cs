@@ -12,7 +12,7 @@ using ProductsManagement.Context;
 namespace ProductsManagement.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250724084556_InitialCreate")]
+    [Migration("20250724115400_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -167,7 +167,6 @@ namespace ProductsManagement.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -297,7 +296,6 @@ namespace ProductsManagement.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageUrl")

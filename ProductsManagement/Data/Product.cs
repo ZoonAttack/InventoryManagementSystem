@@ -9,7 +9,7 @@ namespace ProductsManagement.Data
 
         public string Name { get; set; }
 
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         public ProductStatus Status { get; set; }
 
@@ -17,9 +17,9 @@ namespace ProductsManagement.Data
         public string ImageUrl { get; set; } 
 
         public int CategoryId { get; set; }
-        public Category Category { get; set; }
+        public Category? Category { get; set; }
 
         // Navigation
-        public ICollection<OrderItem> OrderItems { get; set; }
+        public ICollection<OrderItem>? OrderItems { get; set; }
     }
 }

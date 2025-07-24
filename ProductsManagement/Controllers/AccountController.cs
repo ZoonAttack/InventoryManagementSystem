@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -93,6 +94,16 @@ namespace ProductsManagement.Controllers
                     return BadRequest(new { errors = result.Errors.Select(e => e.Description) });
                 }
             } return BadRequest(new { errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
+        }
+
+
+        [HttpPost("logout")]
+        [Authorize]
+        public IActionResult Logout()
+        {
+            // Sign out the user
+            _signInManager.SignOutAsync().Wait();
+            return Ok(new { message = "User logged out successfully" });
         }
     }
 }
