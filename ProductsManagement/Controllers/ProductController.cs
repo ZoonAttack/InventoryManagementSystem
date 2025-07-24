@@ -41,7 +41,7 @@ namespace ProductsManagement.Controllers
         public IActionResult GetProduct(int productId)
         {
             var productEntity = _dbContext.Products
-                .Include(x => x.Category) 
+                .Include(x => x.Category)
                 .SingleOrDefault(x => x.Id == productId);
 
             if (productEntity == null)
@@ -52,8 +52,8 @@ namespace ProductsManagement.Controllers
         }
 
 
-        //[Authorize(Roles = "admin")]
         [HttpPost("product")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> CreateProduct([FromBody] CreateProductDto dto)
         {
             Product product = new Product

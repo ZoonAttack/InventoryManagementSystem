@@ -2,7 +2,6 @@
 
 ###
 POST https://localhost:7264/api/product/product
-Authorization: Bearer <Token>
 Content-Type: application/json
 
 {
