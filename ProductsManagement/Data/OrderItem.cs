@@ -12,6 +12,6 @@
 
         public int Quantity { get; set; }
 
-        public decimal UnitPrice { get; set; } // snapshot of product price
+        public double UnitPrice { get; set; } // snapshot of product price
     }
 }

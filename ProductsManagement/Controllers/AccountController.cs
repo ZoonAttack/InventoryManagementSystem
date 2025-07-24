@@ -22,30 +22,30 @@ namespace ProductsManagement.Controllers
             _dbContext = dbContext;
         }
         [HttpPost("login")]
-        //public async Task<IActionResult> Login(LoginUserDto loginDto)
-        //{
-        //    if(ModelState.IsValid)
-        //    {
-        //        User user = await _userManager.FindByEmailAsync(loginDto.Email);
+        public async Task<IActionResult> Login(LoginUserDto loginDto)
+        {
+            if (ModelState.IsValid)
+            {
+                User user = await _userManager.FindByEmailAsync(loginDto.Email);
 
-        //        if(user is not null)
-        //        {
-        //            bool exist = await _userManager.CheckPasswordAsync(user, loginDto.Password);
-        //            if(exist)
-        //            {
-        //            }
-        //            else
-        //            {
+                if (user is not null)
+                {
+                    bool exist = await _userManager.CheckPasswordAsync(user, loginDto.Password);
+                    if (exist)
+                    {
+                    }
+                    else
+                    {
 
-        //            }
-        //        }
-        //        else
-        //        {
-        //            return NotFound(new { errors = new[] { "User not found" } });
-        //        }
-        //    }
-        //    return BadRequest(new { errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
-        //}
+                    }
+                }
+                else
+                {
+                    return NotFound(new { errors = new[] { "User not found" } });
+                }
+            }
+            return BadRequest(new { errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
+        }
 
         [HttpPost("register")]
         public IActionResult Register(RegisterUserDto registerDto)

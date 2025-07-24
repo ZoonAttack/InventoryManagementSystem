@@ -17,6 +17,7 @@ namespace ProductsManagement
                             .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.Configure<IdentityOptions>(options =>
             {
+                options.SignIn.RequireConfirmedEmail = false;
                 options.Password.RequireDigit = false;
                 options.Password.RequiredLength = 6;
                 options.Password.RequireNonAlphanumeric = false;
@@ -50,11 +51,11 @@ namespace ProductsManagement
 
             app.MapControllers();
 
-            //using (var scope = app.Services.CreateScope())
-            //{
-            //    var services = scope.ServiceProvider;
-            //    await SeedRolesAsync(services);
-            //}
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                await SeedRolesAsync(services);
+            }
             app.Run();
         }
         static async Task SeedRolesAsync(IServiceProvider services)
@@ -69,8 +70,8 @@ namespace ProductsManagement
                     await roleManager.CreateAsync(new IdentityRole(role));
             }
 
-            //Initialize chef
-            string adminEmail = "admin1@gmail.com";
+            //Initialize admin
+            string adminEmail = "admin@gmail.com";
             string adminPassword = "admin123";
             if (await userManager.FindByEmailAsync(adminEmail) == null)
             {

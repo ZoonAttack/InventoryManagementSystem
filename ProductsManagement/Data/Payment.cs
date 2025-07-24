@@ -11,7 +11,7 @@ namespace ProductsManagement.Data
 
         public PaymentMethods Method { get; set; } // Card, COD, etc.
 
-        public decimal Amount { get; set; }
+        public double Amount { get; set; }
 
         public DateTime PaidAt { get; set; }
     }
