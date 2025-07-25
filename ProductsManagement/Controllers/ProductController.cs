@@ -52,7 +52,7 @@ namespace ProductsManagement.Controllers
         }
 
 
-        [HttpPost("product")]
+        [HttpPost("create")]
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> CreateProduct([FromBody] CreateProductDto dto)
         {
@@ -77,8 +77,8 @@ namespace ProductsManagement.Controllers
         }
         
         
-        [Authorize(Roles = "admin")]
-        [HttpPut("product/{productId}")]
+        [HttpPut("update/{productId}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> UpdateProduct(int productId, [FromBody] CreateProductDto dto)
         {
             var product = await _dbContext.Products.FindAsync(productId);
@@ -95,8 +95,9 @@ namespace ProductsManagement.Controllers
             return Ok(product);
         }
 
-        [Authorize(Roles = "admin")]
-        [HttpDelete("product/{productId}")]
+
+        [HttpDelete("destroy/{productId}")]
+        [Authorize(Policy = "AdminOnly")]
         public IActionResult DeleteProduct(int productId)
         {
             var product = _dbContext.Products.Find(productId);
