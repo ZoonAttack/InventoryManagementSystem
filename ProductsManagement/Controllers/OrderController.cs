@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProductsManagement.Context;
 using ProductsManagement.Data;
 using ProductsManagement.DTOs;
 using ProductsManagement.DTOs.Mappers;
+using System.Security.Claims;
 
 namespace ProductsManagement.Controllers
 {
@@ -22,11 +24,26 @@ namespace ProductsManagement.Controllers
 
 
         [HttpGet("orders")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> GetOrders()
         {
             var orders = await _dbContext.Orders.Select(x => x.ToOrderSummaryDto()).ToListAsync();
             return Ok(orders);
         }
+        [HttpGet("my-orders")]
+        public async Task<IActionResult> GetMyOrders()
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var orders = await _dbContext.Orders
+                .Where(x => x.UserId == userId)
+                .Select(x => x.ToOrderSummaryDto())
+                .ToListAsync();
+            if(orders.Count <= 0)
+                return NotFound("No orders found for the current user.");
+
+            return Ok(orders);
+        }
+
         [HttpGet("order/{id}")]
         public async Task<IActionResult> GetOrder(int id)
         {
@@ -45,7 +62,9 @@ namespace ProductsManagement.Controllers
             }
             return Ok(order);
         }
+
         [HttpDelete("destroy/{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> DeleteOrder(int id)
         {
             Order? order = _dbContext.Orders.FirstOrDefault(x => x.Id == id);
