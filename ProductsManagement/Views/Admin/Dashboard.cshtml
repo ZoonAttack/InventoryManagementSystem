@@ -1,0 +1,184 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>Admin Dashboard</title>
+
+    <!-- ربط Bootstrap CSS من CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
+
+    <!-- ربط ملف CSS الخاص بالداشبورد -->
+    <link href="~/css/Dashboard.css" rel="stylesheet" />
+</head>
+<body>
+    <!-- Sidebar -->
+    <button id="sidebarToggleBtn" class="btn btn-primary" style="margin: 1rem;">
+        ☰ List
+    </button>
+    <div id="customSidebar" class="sidebar">
+        <div class="sidebar-header">Dashboard</div>
+        <ul class="sidebar-menu">
+            <li><a href="#">📦 Products</a></li>
+            <li><a href="#">🛒 Orders</a></li>
+            <li><a href="#">👤 Users</a></li>
+            <li><a href="#">📊 Reports</a></li>
+            <li><a href="#">⚙️ Settings</a></li>
+        </ul>
+    </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <header class="main-header mb-4">
+            <h1>Welcome, Admin</h1>
+            <span id="current-role">Role: Admin</span>
+            <button class="btn btn-primary" id="sidebarToggleBtn">
+    <i class="fas fa-bars"></i>
+</button>
+        </header>
+
+        <section class="content">
+            <div class="row" id="products-container">
+                <!-- سيتم إدراج بطاقات المنتجات هنا -->
+            </div>
+        </section>
+
+        <script>
+            // عدل هذه القيمة حسب صلاحيات المستخدم، مثلاً يمكنك جلبها من السيرفر
+            const isAdmin = true; // true إذا المشرف، false للمستخدم العادي
+
+            document.addEventListener("DOMContentLoaded", async () => {
+                const container = document.getElementById("products-container");
+
+                try {
+                    const response = await fetch("/api/product/products");
+                    const products = await response.json();
+
+                    if (!Array.isArray(products) || products.length === 0) {
+                        container.innerHTML = "<p>لا توجد منتجات للعرض.</p>";
+                        return;
+                    }
+
+                    products.forEach(product => {
+                        const card = document.createElement("div");
+                        card.className = "col-xl-4 col-md-6 mb-4";
+                        card.style.maxWidth = "32%";
+
+                        card.innerHTML = `
+                            <div class="card shadow h-100">
+                                <img src="${product.imageUrl || '/images/default.jpg'}" class="card-img-top" alt="${product.name}">
+                                <div class="card-body">
+                                    <h5 class="card-title text-primary">${product.name}</h5>
+                                    <p class="card-text text-gray-800">${product.description || "لا يوجد وصف."}</p>
+                                    <p class="text-success font-weight-bold">السعر: ${product.price} ر.س</p>
+                                    <button class="btn btn-primary btn-sm mb-2" onclick="viewProductDetails(${product.id})">عرض التفاصيل</button>
+                                    ${
+                                        isAdmin ? `
+                                            <div>
+                                                <button class="btn btn-warning btn-sm mr-2" onclick="editProduct(${product.id})">تعديل</button>
+                                                <button class="btn btn-danger btn-sm" onclick="deleteProduct(${product.id}, this)">حذف</button>
+                                            </div>
+                                        ` : ''
+                                    }
+                                </div>
+                            </div>
+                        `;
+                        container.appendChild(card);
+                    });
+                } catch (error) {
+                    console.error("خطأ في تحميل المنتجات:", error);
+                    container.innerHTML = "<p class='text-danger'>حدث خطأ أثناء تحميل المنتجات.</p>";
+                }
+            });
+
+            function viewProductDetails(productId) {
+                window.location.href = `/products/details/${productId}`; // رابط صفحة التفاصيل
+            }
+
+            function editProduct(productId) {
+                window.location.href = `/admin/products/edit/${productId}`; // رابط صفحة التعديل
+            }
+
+            async function deleteProduct(productId, btn) {
+                if (!confirm("هل أنت متأكد من حذف هذا المنتج؟")) return;
+
+                try {
+                    const response = await fetch(`/api/product/product/${productId}`, {
+                        method: "DELETE",
+                        headers: {
+                            "Content-Type": "application/json",
+                            // أضف هنا Authorization header لو مطلوب
+                        }
+                    });
+
+                    if (response.ok) {
+                        alert("تم حذف المنتج بنجاح.");
+                        // إزالة البطاقة من الصفحة
+                        const card = btn.closest(".col-xl-4");
+                        if (card) card.remove();
+                    } else {
+                        const error = await response.text();
+                        alert("خطأ أثناء الحذف: " + error);
+                    }
+                } catch (error) {
+                    alert("حدث خطأ أثناء الحذف.");
+                    console.error(error);
+                }
+            }
+        </script>
+
+    </div>
+
+    <!-- JQuery و Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- FontAwesome JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+
+    <!-- Dashboard JS -->
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const role = localStorage.getItem("role");
+            if (role !== "Admin") {
+                window.location.href = "/admin/login";
+                return;
+            }
+
+            try {
+                const response = await fetch("/api/admin/stats");
+                if (!response.ok) throw new Error("Failed to fetch stats");
+                const data = await response.json();
+
+                document.getElementById("completed-orders").textContent = data.completedOrders;
+                document.getElementById("active-orders").textContent = data.activeOrders;
+                document.getElementById("user-count").textContent = data.usersCount;
+            } catch (error) {
+                console.error("Failed to load dashboard stats", error);
+            }
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const sidebar = document.getElementById("customSidebar");
+            const toggleBtn = document.getElementById("sidebarToggleBtn");
+            const mainContent = document.querySelector(".main-content");
+
+            toggleBtn.addEventListener("click", () => {
+                sidebar.classList.toggle("active");
+                mainContent.classList.toggle("shifted");
+            });
+        });
+	</script>
+	<a href="d:\visual studio\finalproject\productsmanagement\views\admin\dashboard.cshtml">d:\visual studio\finalproject\productsmanagement\views\admin\Dashboard.cshtml</a>
+
+</body>
+</html>

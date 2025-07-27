@@ -84,6 +84,7 @@ namespace ProductsManagement
             app.UseStaticFiles();
 
             app.UseAuthentication();
+
             app.UseAuthorization();
 
             app.MapControllers();
@@ -96,8 +97,8 @@ namespace ProductsManagement
                 await SeedRolesAndAdminAsync(services);
             }
             app.MapControllerRoute(
-        name: "default",
-        pattern: "{controller=Account}/{action=AdminLogin}/{id?}");
+      name: "default",
+pattern: "{controller=Admin}/{action=Dashboard}/{id?}");
             app.Run();
         }
 
