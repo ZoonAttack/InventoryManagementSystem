@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProductsManagement.Context;
-using ProductsManagement.DTOs;
+using ProductsManagement.Data;
 using Shared.DTOs;
 
 namespace ProductsManagement.Controllers
@@ -22,12 +23,31 @@ namespace ProductsManagement.Controllers
         {
             var categories = await _dbContext.Categories.Select(x =>
             new CategoryDto()
-            { 
-                Name = x.Name, 
-                Description = x.Description  
+            {
+                Name = x.Name,
+                Description = x.Description
             }).ToListAsync();
 
             return Ok(categories);
+        }
+
+
+        [HttpPost("create")]
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<IActionResult> CreateCategory([FromBody] CategoryDto categoryDto)
+        {
+            if (categoryDto == null || string.IsNullOrEmpty(categoryDto.Name))
+            {
+                return BadRequest("Invalid category data.");
+            }
+            var category = new Category
+            {
+                Name = categoryDto.Name,
+                Description = categoryDto.Description
+            };
+            _dbContext.Categories.Add(category);
+            await _dbContext.SaveChangesAsync();
+            return CreatedAtAction(nameof(GetCategories), new { id = category.Id }, category);
         }
     }
 }

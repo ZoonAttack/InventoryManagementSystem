@@ -20,6 +20,29 @@ namespace ProductsManagement.Models
             //_apiKey = configuration["JwtSettings:Key"];
         }
 
+        public async Task<ApiResponse<CategoryDto>> CreateOrder(CategoryDto dto)
+        {
+            var content = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync($"{_baseUrl}api/category/create", content);
+            var json = await response.Content.ReadAsStringAsync();
+            var statusCode = (int)response.StatusCode;
+
+            if (response.StatusCode == HttpStatusCode.Created)
+            {
+                var data = JsonSerializer.Deserialize<CategoryDto>(json, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+                return ApiResponse<CategoryDto>.Ok(data!, "Order created successfully.", statusCode);
+            }
+            else
+            {
+                return ApiResponse<CategoryDto>.Fail($"Failed to create order. Server returned: {json}", statusCode);
+            }
+        }
+
         public async Task<ApiResponse<List<ProductSummaryDto>>> GetProductsAsync()
         {
             var response = await _httpClient.GetAsync($"{_baseUrl}api/order/products");
@@ -219,6 +242,7 @@ namespace ProductsManagement.Models
             // Optionally, you can handle successful deletion here
             return ApiResponse<string>.Ok("Product deleted successfully", null, (int)response.StatusCode);
         }
+
 
         public async Task<ApiResponse<Tuple<string, string>>> LoginAsync(LoginUserDto loginDto)
         {
