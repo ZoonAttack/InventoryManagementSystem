@@ -22,9 +22,11 @@ namespace ProductsManagement.Models
 
         public async Task<ApiResponse<CategoryDto>> CreateOrder(CategoryDto dto)
         {
-            var content = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}api/order/create");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "<Token>"); 
+            request.Content = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync($"{_baseUrl}api/category/create", content);
+            HttpResponseMessage response = await _httpClient.SendAsync(request);
             var json = await response.Content.ReadAsStringAsync();
             var statusCode = (int)response.StatusCode;
 
@@ -89,9 +91,11 @@ namespace ProductsManagement.Models
 
         public async Task<ApiResponse<ProductDetailsDto>> CreateProduct(CreateProductDto dto)
         {
-            var content = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}api/product/create");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "<Token>");
+            request.Content = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync($"{_baseUrl}api/product/create", content);
+            var response = await _httpClient.SendAsync(request);
             var json = await response.Content.ReadAsStringAsync();
             var statusCode = (int)response.StatusCode;
 
@@ -112,8 +116,11 @@ namespace ProductsManagement.Models
 
         public async Task<ApiResponse<ProductDetailsDto>> UpdateProduct(CreateProductDto dto, int productId)
         {
-            var content = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
-            var response = await _httpClient.PutAsync($"{_baseUrl}api/Product/update/{productId}", content);
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}api/product/update/{productId}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "<Token>");
+            request.Content = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.SendAsync(request);
 
             var json = await response.Content.ReadAsStringAsync();
 
@@ -133,7 +140,9 @@ namespace ProductsManagement.Models
 
         public async Task<ApiResponse<string>> DeleteProduct(int productId)
         {
-            var response = await _httpClient.DeleteAsync($"{_baseUrl}api/product/destroy/{productId}");
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}api/product/delete/{productId}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "<Token>");
+            var response = await _httpClient.SendAsync(request);
             if (!response.IsSuccessStatusCode)
             {
                 // Handle error response if needed
@@ -190,9 +199,11 @@ namespace ProductsManagement.Models
 
         public async Task<ApiResponse<OrderDetailsDto>> CreateOrder(CreateOrderDto dto)
         {
-            var content = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}api/order/create");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "<Token>");
+            request.Content = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync($"{_baseUrl}api/order/create", content);
+            var response = await _httpClient.SendAsync(request);
             var json = await response.Content.ReadAsStringAsync();
             var statusCode = (int)response.StatusCode;
 
@@ -213,8 +224,11 @@ namespace ProductsManagement.Models
 
         public async Task<ApiResponse<OrderSummaryDto>> UpdateOrderStatusAsync(int orderId, string status)
         {
-            HttpContent content = new StringContent(JsonSerializer.Serialize(new { Status = status }), Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync($"{_baseUrl}api/order/updateStatus/{orderId}", content);
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}api/order/update/{orderId}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "<Token>");
+            request.Content = new StringContent(status, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -231,9 +245,11 @@ namespace ProductsManagement.Models
             }
         }
 
-        public async Task<ApiResponse<string>> DeleteOrder(int OrderId)
+        public async Task<ApiResponse<string>> DeleteOrder(int orderId)
         {
-            var response = await _httpClient.DeleteAsync($"{_baseUrl}api/order/destroy/{OrderId}");
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}api/order/delete/{orderId}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "<Token>");
+            var response = await _httpClient.SendAsync(request);
             if (!response.IsSuccessStatusCode)
             {
                 // Handle error response if needed
