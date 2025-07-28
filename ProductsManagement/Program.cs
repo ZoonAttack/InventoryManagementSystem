@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using ProductsManagement.Context;
 using ProductsManagement.Data;
 using ProductsManagement.Data.Utility;
@@ -34,7 +35,32 @@ namespace ProductsManagement
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new() { Title = "Your API", Version = "v1" });
+
+                // Add JWT Authentication
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please enter a valid JWT token",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
+                    Scheme = "bearer"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+                        },
+                        new string[] {}
+                    }
+                });
+            });
 
             builder.Services.Configure<JWTSettings>(builder.Configuration.GetSection("JwtSettings"));
 

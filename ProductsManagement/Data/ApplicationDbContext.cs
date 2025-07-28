@@ -71,20 +71,20 @@ namespace ProductsManagement.Context
             // Order - Invoice (1-to-1)
             // ----------------------
 
-            modelBuilder.Entity<Invoice>()
-                .HasOne(i => i.Order)
-                .WithOne(o => o.Invoice)
-                .HasForeignKey<Invoice>(i => i.OrderId)
-                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Order>()
+                 .HasOne(o => o.Invoice)
+                 .WithOne(i => i.Order)
+                 .HasForeignKey<Order>(o => o.InvoiceId)
+                 .OnDelete(DeleteBehavior.Cascade);
 
             // ----------------------
             // Order - Payment (1-to-1)
             // ----------------------
 
-            modelBuilder.Entity<Payment>()
-                .HasOne(p => p.Order)
-                .WithOne(o => o.Payment)
-                .HasForeignKey<Payment>(p => p.OrderId)
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.Payment)
+                .WithOne(p => p.Order)
+                .HasForeignKey<Order>(o => o.PaymentId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
 

@@ -8,19 +8,25 @@ namespace ProductsManagement.Data
 
         public DateTime CreatedAt { get; set; }
 
-        public OrderStatus Status { get; set; } 
+        public OrderStatus Status { get; set; }
 
-        //One user
+        // One User
         public string UserId { get; set; }
         public User User { get; set; }
 
-        //Many
+        // Many OrderItems
         public ICollection<OrderItem> OrderItems { get; set; }
 
         public double TotalAmount { get; set; }
-        //One invoice
+
+        // Foreign key to Invoice
+        public int? InvoiceId { get; set; }
         public Invoice Invoice { get; set; }
-        //One Payment
+
+        // One Payment
+        public int? PaymentId { get; set; }
         public Payment Payment { get; set; }
+        public string ShippingAddress { get; set; }
     }
+
 }

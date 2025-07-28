@@ -4,13 +4,13 @@
     {
         public int Id { get; set; }
 
-        public int OrderId { get; set; }
-        public Order Order { get; set; }
-
+        // Remove OrderId from here
         public string? PdfPath { get; set; }
 
         public DateTime IssuedAt { get; set; }
 
-        //public string IssuedBy { get; set; }
+        // Navigation back (optional)
+        public Order Order { get; set; }
     }
+
 }
