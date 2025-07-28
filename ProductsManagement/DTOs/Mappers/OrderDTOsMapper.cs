@@ -30,11 +30,11 @@ namespace ProductsManagement.DTOs.Mappers
                 UserName = order.User?.UserName ?? "Unknown User",
                 OrderItems = order.OrderItems.Select(item => item.ToOrderItemDto()).ToList(),
                 TotalAmount = order.TotalAmount,
-                Invoice = order.Invoice?.ToInvoiceDto(),
-                Payment = order.Payment?.ToPaymentDto()
+                Invoice = order.Invoice?.ToInvoiceDto(order),
+                Payment = order.Payment?.ToPaymentDto(order)
             };
         }
-        private static PaymentDto ToPaymentDto(this Payment payment)
+        private static PaymentDto ToPaymentDto(this Payment payment, Order order)
         {
             if (payment == null)
                 return null;
@@ -45,7 +45,7 @@ namespace ProductsManagement.DTOs.Mappers
                 PaidAt = payment.PaidAt
             };
         }
-        private static InvoiceDto ToInvoiceDto(this Invoice invoice)
+        private static InvoiceDto ToInvoiceDto(this Invoice invoice, Order order)
         {
             if (invoice == null)
                 return null;
@@ -53,7 +53,11 @@ namespace ProductsManagement.DTOs.Mappers
             {
                 InvoiceNumber = invoice.Id,
                 Amount = invoice.Order.TotalAmount,
-                IssuedAt = invoice.IssuedAt
+                IssuedAt = invoice.IssuedAt,
+                OrderFor = order.User?.UserName ?? "Unknown User",
+                OrderId = order.Id,
+                OrderItems = order.OrderItems.Select(item => item.ToOrderItemDto()).ToList(),
+                PaymentMethod = order.Payment?.Method.ToString() ?? "Unknown",
             };
         }
         private static OrderItemDto ToOrderItemDto(this OrderItem orderItem)
@@ -62,11 +66,27 @@ namespace ProductsManagement.DTOs.Mappers
                 return null;
             return new OrderItemDto
             {
-                ProductName = orderItem.Product.Name,
+                ProductId = orderItem.Product.Id,
                 ImageURL = orderItem.Product.ImageUrl,
                 Quantity = orderItem.Quantity,
-                UnitPrice = orderItem.UnitPrice
             };
+        }
+
+
+        public static List<OrderItem> ToOrderItems(this List<OrderItemDto> orderItemDto)
+        {
+            if (orderItemDto == null || !orderItemDto.Any())
+                return new List<OrderItem>();
+            return orderItemDto.Select(item => new OrderItem
+            {
+                Product = new Product
+                {
+                    Name = item.ProductName,
+                    ImageUrl = item.ImageURL
+                },
+                Quantity = item.Quantity,
+                UnitPrice = item.UnitPrice
+            }).ToList();
         }
     }
 }

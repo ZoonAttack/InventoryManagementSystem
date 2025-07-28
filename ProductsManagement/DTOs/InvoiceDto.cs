@@ -16,6 +16,6 @@
 
         public DateTime IssuedAt { get; set; }
 
-        public string IssuedBy { get; set; }
+        //public string IssuedBy { get; set; }
     }
 }
