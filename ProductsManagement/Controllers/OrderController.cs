@@ -123,8 +123,24 @@ namespace ProductsManagement.Controllers
             }
 
         }
-        [HttpDelete("destroy/{id}")]
+
+        [HttpPut("update/{id}")]
         [Authorize(Policy = "AdminOnly")]
+        public async Task<IActionResult> UpdateOrderStatus(int id, string status)
+        {
+            Order? order = await _dbContext.Orders.FindAsync(id);
+            if (order == null)
+            {
+                return NotFound($"Order with ID {id} not found.");
+            }
+            order.Status = (OrderStatus)Enum.Parse(typeof(OrderStatus), status);
+            _dbContext.Orders.Update(order);
+            await _dbContext.SaveChangesAsync();
+            return Ok(order.ToOrderSummaryDto());
+        }
+            [HttpDelete("destroy/{id}")]
+        [Authorize(Policy = "AdminOnly")]
+
         public async Task<IActionResult> DeleteOrder(int id)
         {
             Order? order = _dbContext.Orders.FirstOrDefault(x => x.Id == id);
