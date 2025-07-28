@@ -8,12 +8,12 @@ namespace ProductsManagement.Models
     public class ApiCalls
     {
         private readonly HttpClient _httpClient;
-        private readonly string _apiKey;
-        private readonly string _baseUrl = "https://localhost:5001/"; // Adjust the base URL as needed
+       // private readonly string _apiKey;
+        private readonly string _baseUrl = "https://localhost:7264/"; // Adjust the base URL as needed
         public ApiCalls(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
-            _apiKey = configuration["JwtSettings:Key"];
+            //_apiKey = configuration["JwtSettings:Key"];
         }
 
 
