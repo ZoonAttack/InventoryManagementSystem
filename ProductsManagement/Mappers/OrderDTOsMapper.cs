@@ -9,13 +9,14 @@ namespace ProductsManagement.DTOs.Mappers
         {
             if (order == null)
                 return null;
+
             return new OrderSummaryDto
             {
                 CreatedAt = order.CreatedAt,
                 Status = order.Status.ToString(),
                 OrderFor = order.User?.UserName ?? "Unknown User",
                 TotalAmount = order.TotalAmount,
-                PaymentMethod = order.Payment.Method.ToString() ?? "Unknown"
+                PaymentMethod = order.Payment?.Method.ToString() ?? "Unknown"
             };
         }
 

@@ -24,18 +24,23 @@ namespace Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginUserDto loginDto)
         {
-            var result = await _apiCall.LoginAsync(loginDto);
+            ApiResponse<Tuple<string, string>> result = await _apiCall.LoginAsync(loginDto);
+            var data = result.Data;
+            if(result.Success == false || data == null)
+            {
+                ViewData["ErrorMessage"] = result.Message ?? "Login failed.";
+                return View(loginDto);
+            }
 
-            if (result.Item2 == "admin")
+            if (data.Item2.Equals("admin"))
             {
                 // Login success - save token in TempData, Session, or Cookie
-                TempData["token"] = result.Item1;
-                TempData["role"] = result.Item2;
+                HttpContext.Session.SetString("token", data.Item1);
+                HttpContext.Session.SetString("role", data.Item2);
 
                 return RedirectToAction("Dashboard", "Admin"); // Change to your actual page
             }
-
-            ViewData["ErrorMessage"] = result.Item2 ?? "Invalid login.";
+            ViewData["ErrorMessage"] = data.Item2 ?? "Invalid login.";
             return View(loginDto);
         }
         public async Task<IActionResult> Dashboard()

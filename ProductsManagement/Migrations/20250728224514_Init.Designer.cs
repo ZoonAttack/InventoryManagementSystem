@@ -12,8 +12,8 @@ using ProductsManagement.Context;
 namespace ProductsManagement.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250724115400_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250728224514_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -189,17 +189,10 @@ namespace ProductsManagement.Migrations
                     b.Property<DateTime>("IssuedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
-
                     b.Property<string>("PdfPath")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("OrderId")
-                        .IsUnique();
 
                     b.ToTable("Invoices");
                 });
@@ -215,6 +208,16 @@ namespace ProductsManagement.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("InvoiceId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PaymentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ShippingAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -226,6 +229,14 @@ namespace ProductsManagement.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("InvoiceId")
+                        .IsUnique()
+                        .HasFilter("[InvoiceId] IS NOT NULL");
+
+                    b.HasIndex("PaymentId")
+                        .IsUnique()
+                        .HasFilter("[PaymentId] IS NOT NULL");
 
                     b.HasIndex("UserId");
 
@@ -277,9 +288,6 @@ namespace ProductsManagement.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("OrderId")
-                        .IsUnique();
 
                     b.ToTable("Payments");
                 });
@@ -435,24 +443,27 @@ namespace ProductsManagement.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ProductsManagement.Data.Invoice", b =>
-                {
-                    b.HasOne("ProductsManagement.Data.Order", "Order")
-                        .WithOne("Invoice")
-                        .HasForeignKey("ProductsManagement.Data.Invoice", "OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Order");
-                });
-
             modelBuilder.Entity("ProductsManagement.Data.Order", b =>
                 {
+                    b.HasOne("ProductsManagement.Data.Invoice", "Invoice")
+                        .WithOne("Order")
+                        .HasForeignKey("ProductsManagement.Data.Order", "InvoiceId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("ProductsManagement.Data.Payment", "Payment")
+                        .WithOne("Order")
+                        .HasForeignKey("ProductsManagement.Data.Order", "PaymentId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("ProductsManagement.Data.User", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Invoice");
+
+                    b.Navigation("Payment");
 
                     b.Navigation("User");
                 });
@@ -476,17 +487,6 @@ namespace ProductsManagement.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("ProductsManagement.Data.Payment", b =>
-                {
-                    b.HasOne("ProductsManagement.Data.Order", "Order")
-                        .WithOne("Payment")
-                        .HasForeignKey("ProductsManagement.Data.Payment", "OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Order");
-                });
-
             modelBuilder.Entity("ProductsManagement.Data.Product", b =>
                 {
                     b.HasOne("ProductsManagement.Data.Category", "Category")
@@ -503,14 +503,20 @@ namespace ProductsManagement.Migrations
                     b.Navigation("Products");
                 });
 
+            modelBuilder.Entity("ProductsManagement.Data.Invoice", b =>
+                {
+                    b.Navigation("Order")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("ProductsManagement.Data.Order", b =>
                 {
-                    b.Navigation("Invoice")
-                        .IsRequired();
-
                     b.Navigation("OrderItems");
+                });
 
-                    b.Navigation("Payment")
+            modelBuilder.Entity("ProductsManagement.Data.Payment", b =>
+                {
+                    b.Navigation("Order")
                         .IsRequired();
                 });
 

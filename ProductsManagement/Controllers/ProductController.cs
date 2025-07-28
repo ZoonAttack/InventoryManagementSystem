@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProductsManagement.Context;
 using ProductsManagement.Data;
+using ProductsManagement.Data.Utility;
 using ProductsManagement.DTOs;
 using ProductsManagement.DTOs.Mappers;
 using Shared.DTOs;
@@ -90,6 +91,7 @@ namespace ProductsManagement.Controllers
             product.Name = dto.Name;
             product.Description = dto.Description;
             product.Price = dto.Price;
+            product.Status = (ProductStatus)Enum.Parse(typeof(ProductStatus), dto.Status);
             product.ImageUrl = dto.ImageUrl;
             product.CategoryId = dto.CategoryId;
             product.Category = await _dbContext.Categories.FindAsync(dto.CategoryId)
@@ -102,15 +104,15 @@ namespace ProductsManagement.Controllers
 
         [HttpDelete("destroy/{productId}")]
         [Authorize(Policy = "AdminOnly")]
-        public IActionResult DeleteProduct(int productId)
+        public async Task<IActionResult> DeleteProduct(int productId)
         {
             var product = _dbContext.Products.Find(productId);
+
             if (product == null)
                 return NotFound($"Product with ID {productId} not found.");
 
-            // Check if the product is associated with any order items
-            if (product.OrderItems != null && product.OrderItems.Any())
-                return BadRequest($"Product with ID {productId} cannot be deleted because it is associated with existing orders.(Consider marking it as out of stock)");
+            bool productHasItems = await _dbContext.OrderItems.AnyAsync(x => x.ProductId == productId);
+            if(productHasItems) return BadRequest($"Product with ID {productId} cannot be deleted because it is associated with existing orders. Consider marking it as out of stock instead.");
 
             _dbContext.Products.Remove(product);
             _dbContext.SaveChanges();

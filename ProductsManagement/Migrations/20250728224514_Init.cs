@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ProductsManagement.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -62,6 +62,36 @@ namespace ProductsManagement.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Categories", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Invoices",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PdfPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IssuedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Invoices", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Payments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OrderId = table.Column<int>(type: "int", nullable: false),
+                    Method = table.Column<int>(type: "int", nullable: false),
+                    Amount = table.Column<double>(type: "float", nullable: false),
+                    PaidAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Payments", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -171,28 +201,6 @@ namespace ProductsManagement.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Orders",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TotalAmount = table.Column<double>(type: "float", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Orders", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Orders_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Products",
                 columns: table => new
                 {
@@ -217,44 +225,38 @@ namespace ProductsManagement.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Invoices",
+                name: "Orders",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    OrderId = table.Column<int>(type: "int", nullable: false),
-                    PdfPath = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IssuedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TotalAmount = table.Column<double>(type: "float", nullable: false),
+                    InvoiceId = table.Column<int>(type: "int", nullable: true),
+                    PaymentId = table.Column<int>(type: "int", nullable: true),
+                    ShippingAddress = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Invoices", x => x.Id);
+                    table.PrimaryKey("PK_Orders", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Invoices_Orders_OrderId",
-                        column: x => x.OrderId,
-                        principalTable: "Orders",
+                        name: "FK_Orders_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Orders_Invoices_InvoiceId",
+                        column: x => x.InvoiceId,
+                        principalTable: "Invoices",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Payments",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    OrderId = table.Column<int>(type: "int", nullable: false),
-                    Method = table.Column<int>(type: "int", nullable: false),
-                    Amount = table.Column<double>(type: "float", nullable: false),
-                    PaidAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Payments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Payments_Orders_OrderId",
-                        column: x => x.OrderId,
-                        principalTable: "Orders",
+                        name: "FK_Orders_Payments_PaymentId",
+                        column: x => x.PaymentId,
+                        principalTable: "Payments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -326,26 +328,28 @@ namespace ProductsManagement.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Invoices_OrderId",
-                table: "Invoices",
-                column: "OrderId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_OrderItems_ProductId",
                 table: "OrderItems",
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Orders_InvoiceId",
+                table: "Orders",
+                column: "InvoiceId",
+                unique: true,
+                filter: "[InvoiceId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_PaymentId",
+                table: "Orders",
+                column: "PaymentId",
+                unique: true,
+                filter: "[PaymentId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Orders_UserId",
                 table: "Orders",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Payments_OrderId",
-                table: "Payments",
-                column: "OrderId",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_CategoryId",
@@ -372,28 +376,28 @@ namespace ProductsManagement.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Invoices");
-
-            migrationBuilder.DropTable(
                 name: "OrderItems");
-
-            migrationBuilder.DropTable(
-                name: "Payments");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Products");
-
-            migrationBuilder.DropTable(
                 name: "Orders");
 
             migrationBuilder.DropTable(
-                name: "Categories");
+                name: "Products");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Invoices");
+
+            migrationBuilder.DropTable(
+                name: "Payments");
+
+            migrationBuilder.DropTable(
+                name: "Categories");
         }
     }
 }

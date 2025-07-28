@@ -11,19 +11,19 @@ namespace ProductsManagement.Models
     public class ApiCalls
     {
         private readonly HttpClient _httpClient;
-        //private string adminToken = string.Empty;
-       // private readonly string _apiKey;
         private readonly string _baseUrl = "https://localhost:7264/"; // Adjust the base URL as needed
-        public ApiCalls(HttpClient httpClient, IConfiguration configuration)
+        private readonly string _token = string.Empty;
+
+        public ApiCalls(HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
         {
             _httpClient = httpClient;
-            //_apiKey = configuration["JwtSettings:Key"];
+            _token = httpContextAccessor.HttpContext?.Session.GetString("token") ?? "INVALID";
         }
 
-        public async Task<ApiResponse<CategoryDto>> CreateOrder(CategoryDto dto)
+        public async Task<ApiResponse<CategorySummaryDto>> CreateOrder(CategorySummaryDto dto)
         {
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}api/order/create");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "<Token>"); 
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token); 
             request.Content = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await _httpClient.SendAsync(request);
@@ -32,16 +32,16 @@ namespace ProductsManagement.Models
 
             if (response.StatusCode == HttpStatusCode.Created)
             {
-                var data = JsonSerializer.Deserialize<CategoryDto>(json, new JsonSerializerOptions
+                var data = JsonSerializer.Deserialize<CategorySummaryDto>(json, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
                 });
 
-                return ApiResponse<CategoryDto>.Ok(data!, "Order created successfully.", statusCode);
+                return ApiResponse<CategorySummaryDto>.Ok(data!, "Order created successfully.", statusCode);
             }
             else
             {
-                return ApiResponse<CategoryDto>.Fail($"Failed to create order. Server returned: {json}", statusCode);
+                return ApiResponse<CategorySummaryDto>.Fail($"Failed to create order. Server returned: {json}", statusCode);
             }
         }
 
@@ -92,7 +92,7 @@ namespace ProductsManagement.Models
         public async Task<ApiResponse<ProductDetailsDto>> CreateProduct(CreateProductDto dto)
         {
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}api/product/create");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "<Token>");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token);
             request.Content = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
 
             var response = await _httpClient.SendAsync(request);
@@ -117,7 +117,7 @@ namespace ProductsManagement.Models
         public async Task<ApiResponse<ProductDetailsDto>> UpdateProduct(CreateProductDto dto, int productId)
         {
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}api/product/update/{productId}");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "<Token>");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token);
             request.Content = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
 
             var response = await _httpClient.SendAsync(request);
@@ -141,7 +141,7 @@ namespace ProductsManagement.Models
         public async Task<ApiResponse<string>> DeleteProduct(int productId)
         {
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}api/product/delete/{productId}");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "<Token>");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token);
             var response = await _httpClient.SendAsync(request);
             if (!response.IsSuccessStatusCode)
             {
@@ -200,7 +200,7 @@ namespace ProductsManagement.Models
         public async Task<ApiResponse<OrderDetailsDto>> CreateOrder(CreateOrderDto dto)
         {
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}api/order/create");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "<Token>");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token);
             request.Content = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
 
             var response = await _httpClient.SendAsync(request);
@@ -225,7 +225,7 @@ namespace ProductsManagement.Models
         public async Task<ApiResponse<OrderSummaryDto>> UpdateOrderStatusAsync(int orderId, string status)
         {
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}api/order/update/{orderId}");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "<Token>");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token);
             request.Content = new StringContent(status, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.SendAsync(request);
@@ -248,7 +248,7 @@ namespace ProductsManagement.Models
         public async Task<ApiResponse<string>> DeleteOrder(int orderId)
         {
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}api/order/delete/{orderId}");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "<Token>");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token);
             var response = await _httpClient.SendAsync(request);
             if (!response.IsSuccessStatusCode)
             {
@@ -272,7 +272,7 @@ namespace ProductsManagement.Models
                 {
                     PropertyNameCaseInsensitive = true
                 });
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Token);
+                
                 return ApiResponse<Tuple<string, string>>.Ok(
                     new Tuple<string, string>(token.Token, token.Role),
                     "Login successful", (int)response.StatusCode);
@@ -288,7 +288,9 @@ namespace ProductsManagement.Models
 
         public async Task<ApiResponse<string>> Logout()
         {
-            var response = await _httpClient.PostAsync($"{_baseUrl}api/Account/Logout", null);
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}api/Account/Logout");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token);
+            var response = await _httpClient.SendAsync(request);
             if(!response.IsSuccessStatusCode)
             {
                 return ApiResponse<string>.Fail(

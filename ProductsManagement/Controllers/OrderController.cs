@@ -25,7 +25,10 @@ namespace ProductsManagement.Controllers
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> GetOrders()
         {
-            var orders = await _dbContext.Orders.Select(x => x.ToOrderSummaryDto()).ToListAsync();
+            var orders = await _dbContext.Orders
+                        .Include(o => o.User)
+                        .Include(o => o.Payment).Select(x => x.ToOrderSummaryDto())
+                        .ToListAsync();
             return Ok(orders);
         }
 
@@ -76,23 +79,24 @@ namespace ProductsManagement.Controllers
                     {
                         return BadRequest($"Product with ID {item.ProductId} not found.");
                     }
-                    totalAmount += product.Price;
+                    totalAmount += product.Price * item.Quantity;
                 }
                 //2- create the order
                 string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                 Order order = new Order()
                 {
+                    UserId = userId,
                     Status = OrderStatus.PENDING,
                     CreatedAt = DateTime.UtcNow,
                     TotalAmount = totalAmount,
                     ShippingAddress = dto.ShippingAddress,
-                    OrderItems = (ICollection<OrderItem>)dto.OrderItems.Select(item => new OrderItem
+                    OrderItems = dto.OrderItems.Select(item => new OrderItem
                     {
                         ProductId = item.ProductId,
                         Quantity = item.Quantity,
                         UnitPrice = _dbContext.Products.SingleOrDefault(x => x.Id == item.ProductId)?.Price ?? 0
-                    })
+                    }).ToList()
                 };
                 _dbContext.Orders.Add(order);
                 await _dbContext.SaveChangesAsync(); // Save to get the order ID for the next steps
@@ -102,7 +106,7 @@ namespace ProductsManagement.Controllers
                     Method = PaymentMethods.COD,
                     Amount = totalAmount,
                     PaidAt = DateTime.UtcNow,
-                    OrderId = order.Id
+                    Order = order
                 };
                 _dbContext.Payments.Add(payment);
                 //4- create the invoice
@@ -138,11 +142,8 @@ namespace ProductsManagement.Controllers
             await _dbContext.SaveChangesAsync();
             return Ok(order.ToOrderSummaryDto());
         }
-            [HttpDelete("destroy/{id}")]
-        [Authorize(Policy = "AdminOnly")]
 
-
-        [HttpDelete("delete/{id}")]
+        [HttpDelete("destroy/{id}")]
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> DeleteOrder(int id)
         {
