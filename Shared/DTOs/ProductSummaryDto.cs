@@ -1,5 +1,4 @@
-﻿using ProductsManagement.Data.Utility;
-
+﻿
 namespace ProductsManagement.DTOs
 {
     public class ProductSummaryDto

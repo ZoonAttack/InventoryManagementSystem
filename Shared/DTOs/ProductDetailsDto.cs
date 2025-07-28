@@ -1,6 +1,4 @@
-﻿using ProductsManagement.Data.Utility;
-using ProductsManagement.Data;
-
+﻿
 namespace ProductsManagement.DTOs
 {
     public class ProductDetailsDto
