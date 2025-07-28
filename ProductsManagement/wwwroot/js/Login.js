@@ -59,10 +59,10 @@ async function loginAdmin(event) {
     };
 
     try {
-        const response = await fetch('/api/admin/auth/login', {
+        const response = await fetch('/api/Account/login', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
             body: JSON.stringify(loginData)
         });
@@ -70,9 +70,13 @@ async function loginAdmin(event) {
         const data = await response.json();
 
         if (response.ok) {
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('role', data.role);
-            window.location.href = '/admin/dashboard';
+            sessionStorage.setItem('token', data.token);
+            sessionStorage.setItem('role', data.role);
+            if (data.role == "admin") {
+                //console.log("Admin login successful");
+                window.location.replace('/admin/dashboard');
+            }
+            else console.log("Not admin");
         } else {
             errorMsg.textContent = data.errors?.[0] || 'Login failed';
         }
@@ -81,31 +85,12 @@ async function loginAdmin(event) {
         console.error('Error:', error);
     }
     document.addEventListener('DOMContentLoaded', () => {
-        const role = localStorage.getItem('role');
-        if (role !== 'Admin') {
+        const role = sessionStorage.getItem('role');
+        if (role !== 'admin') {
             window.location.href = '/admin/login';
         }
 
         document.getElementById('current-role').textContent = `Role: ${role}`;
     });
-
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-        const dropBtn = document.querySelector('.dropbtn');
-        const dropdown = document.querySelector('.dropdown');
-
-        dropBtn.addEventListener('click', function (event) {
-            event.stopPropagation();
-        dropdown.classList.toggle('show');
-        });
-
-        document.addEventListener('click', function (event) {
-            if (!dropdown.contains(event.target)) {
-            dropdown.classList.remove('show');
-            }
-        });
-    });
-    </script>
-
 }
+

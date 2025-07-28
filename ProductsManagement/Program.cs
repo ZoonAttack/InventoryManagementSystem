@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using ProductsManagement.Context;
 using ProductsManagement.Data;
 using ProductsManagement.Data.Utility;
+using ProductsManagement.Models;
 using System.Text;
 
 namespace ProductsManagement
@@ -70,7 +71,7 @@ namespace ProductsManagement
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
+            builder.Services.AddHttpClient<APICalls>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
