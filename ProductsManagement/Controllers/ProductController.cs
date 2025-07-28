@@ -74,7 +74,7 @@ namespace ProductsManagement.Controllers
             {
                 return BadRequest($"Error creating product: {ex.Message}");
             }
-            return Ok(product);
+            return Ok(product.ToProductDetailsDto());
         }
         
         
@@ -93,7 +93,7 @@ namespace ProductsManagement.Controllers
             product.CategoryId = dto.CategoryId;
             _dbContext.Products.Update(product);
             await _dbContext.SaveChangesAsync();
-            return Ok(product);
+            return Ok(product.ToProductDetailsDto());
         }
 
 

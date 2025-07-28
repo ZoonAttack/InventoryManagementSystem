@@ -141,6 +141,9 @@ namespace ProductsManagement.Controllers
             [HttpDelete("destroy/{id}")]
         [Authorize(Policy = "AdminOnly")]
 
+
+        [HttpDelete("delete/{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> DeleteOrder(int id)
         {
             Order? order = _dbContext.Orders.FirstOrDefault(x => x.Id == id);

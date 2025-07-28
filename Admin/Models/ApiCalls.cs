@@ -1,4 +1,7 @@
-﻿using Shared.DTOs;
+﻿using Admin.Models;
+using Microsoft.AspNetCore.Mvc;
+using Shared.DTOs;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -17,9 +20,9 @@ namespace ProductsManagement.Models
             //_apiKey = configuration["JwtSettings:Key"];
         }
 
-        public async Task<List<ProductSummaryDto>> GetProductsAsync()
+        public async Task<ApiResponse<List<ProductSummaryDto>>> GetProductsAsync()
         {
-            var response = await _httpClient.GetAsync($"{_baseUrl}api/Product/products");
+            var response = await _httpClient.GetAsync($"{_baseUrl}api/order/products");
             if(response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
@@ -27,19 +30,99 @@ namespace ProductsManagement.Models
                 {
                     PropertyNameCaseInsensitive = true
                 });
-                return data ?? new List<ProductSummaryDto>();
+                return ApiResponse<List<ProductSummaryDto>>.Ok(data,
+                                                                "Products retrieved successfully",
+                                                                (int)response.StatusCode);
             }
             else
             {
                 // Handle error response
-                return new List<ProductSummaryDto>();
+                return ApiResponse<List<ProductSummaryDto>>.Fail(
+                    $"Failed to retrieve products: {response.ReasonPhrase}", (int)response.StatusCode);
             }
-
         }
 
-        public async Task<List<OrderSummaryDto>> GetOrdersAsync()
+        public async Task<ApiResponse<ProductDetailsDto>> GetProductAsync(int orderId)
         {
-            var response = await _httpClient.GetAsync($"{_baseUrl}api/Order/orders");
+            var response = await _httpClient.GetAsync($"{_baseUrl}api/order/order/{orderId}");
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var data = JsonSerializer.Deserialize<ProductDetailsDto>(content, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+                return ApiResponse<ProductDetailsDto>.Ok(data!,
+                                                        "Product retrieved successfully",
+                                                        (int)response.StatusCode);
+            }
+            else
+            {
+                // Handle error response
+                return ApiResponse<ProductDetailsDto>.Fail(
+                    $"Failed to retrieve product: {response.ReasonPhrase}", (int)response.StatusCode);
+            }
+        }
+
+        public async Task<ApiResponse<ProductDetailsDto>> CreateProduct(CreateProductDto dto)
+        {
+            var content = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync($"{_baseUrl}api/product/create", content);
+            var json = await response.Content.ReadAsStringAsync();
+            var statusCode = (int)response.StatusCode;
+
+            if (response.StatusCode == HttpStatusCode.Created)
+            {
+                var data = JsonSerializer.Deserialize<ProductDetailsDto>(json, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+                return ApiResponse<ProductDetailsDto>.Ok(data!, "Order created successfully.", statusCode);
+            }
+            else
+            {
+                return ApiResponse<ProductDetailsDto>.Fail($"Failed to create order. Server returned: {json}", statusCode);
+            }
+        }
+
+        public async Task<ApiResponse<ProductDetailsDto>> UpdateProduct(CreateProductDto dto, int productId)
+        {
+            var content = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
+            var response = await _httpClient.PutAsync($"{_baseUrl}api/Product/update/{productId}", content);
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return ApiResponse<ProductDetailsDto>.Fail(
+                    $"Failed to update product: {json}", (int)response.StatusCode);
+            }
+
+            var data = JsonSerializer.Deserialize<ProductDetailsDto>(json, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            return ApiResponse<ProductDetailsDto>.Ok(data, "Product updated successfully", (int)response.StatusCode);
+        }
+
+        public async Task<ApiResponse<string>> DeleteProduct(int productId)
+        {
+            var response = await _httpClient.DeleteAsync($"{_baseUrl}api/product/destroy/{productId}");
+            if (!response.IsSuccessStatusCode)
+            {
+                // Handle error response if needed
+                return ApiResponse<string>.Fail("Failed to delete product", (int)response.StatusCode);
+            }
+            // Optionally, you can handle successful deletion here
+            return ApiResponse<string>.Ok("Product deleted successfully", null, (int)response.StatusCode);
+        }
+
+        public async Task<ApiResponse<List<OrderSummaryDto>>> GetOrdersAsync()
+        {
+            var response = await _httpClient.GetAsync($"{_baseUrl}api/order/orders");
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
@@ -47,16 +130,97 @@ namespace ProductsManagement.Models
                 {
                     PropertyNameCaseInsensitive = true
                 });
-                return data ?? new List<OrderSummaryDto>();
+                return ApiResponse<List<OrderSummaryDto>>.Ok(data,
+                                                                "Orders retrieved successfully",
+                                                                (int)response.StatusCode);
             }
             else
             {
                 // Handle error response
-                return new List<OrderSummaryDto>();
+                return ApiResponse<List<OrderSummaryDto>>.Fail(
+                    $"Failed to retrieve Orders: {response.ReasonPhrase}", (int)response.StatusCode);
+            }
+
+        }
+
+        public async Task<ApiResponse<OrderDetailsDto>> GetOrderAsync(int orderId)
+        {
+            var response = await _httpClient.GetAsync($"{_baseUrl}api/order/order/{orderId}");
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var data = JsonSerializer.Deserialize<OrderDetailsDto>(content, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+                return ApiResponse<OrderDetailsDto>.Ok(data,
+                                                        "Order retrieved successfully",
+                                                        (int)response.StatusCode);
+            }
+            else
+            {
+                // Handle error response
+                return ApiResponse<OrderDetailsDto>.Fail(
+                    $"Failed to retrieve order: {response.ReasonPhrase}", (int)response.StatusCode);
             }
         }
 
-        public async Task<Tuple<string, string>> LoginAsync(LoginUserDto loginDto)
+        public async Task<ApiResponse<OrderDetailsDto>> CreateOrder(CreateOrderDto dto)
+        {
+            var content = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync($"{_baseUrl}api/order/create", content);
+            var json = await response.Content.ReadAsStringAsync();
+            var statusCode = (int)response.StatusCode;
+
+            if (response.StatusCode == HttpStatusCode.Created)
+            {
+                var data = JsonSerializer.Deserialize<OrderDetailsDto>(json, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+                return ApiResponse<OrderDetailsDto>.Ok(data!, "Order created successfully.", statusCode);
+            }
+            else
+            {
+                return ApiResponse<OrderDetailsDto>.Fail($"Failed to create order. Server returned: {json}", statusCode);
+            }
+        }
+
+        public async Task<ApiResponse<OrderSummaryDto>> UpdateOrderStatusAsync(int orderId, string status)
+        {
+            HttpContent content = new StringContent(JsonSerializer.Serialize(new { Status = status }), Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync($"{_baseUrl}api/order/updateStatus/{orderId}", content);
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var data = JsonSerializer.Deserialize<OrderSummaryDto>(json, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+                return ApiResponse<OrderSummaryDto>.Ok(data, "Order status updated successfully", (int)response.StatusCode);
+            }
+            else
+            {
+                return ApiResponse<OrderSummaryDto>.Fail(
+                    $"Failed to update order status: {response.ReasonPhrase}", (int)response.StatusCode);
+            }
+        }
+
+        public async Task<ApiResponse<string>> DeleteOrder(int OrderId)
+        {
+            var response = await _httpClient.DeleteAsync($"{_baseUrl}api/order/destroy/{OrderId}");
+            if (!response.IsSuccessStatusCode)
+            {
+                // Handle error response if needed
+                return ApiResponse<string>.Fail("Failed to delete product", (int)response.StatusCode);
+            }
+            // Optionally, you can handle successful deletion here
+            return ApiResponse<string>.Ok("Product deleted successfully", null, (int)response.StatusCode);
+        }
+
+        public async Task<ApiResponse<Tuple<string, string>>> LoginAsync(LoginUserDto loginDto)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}api/Account/Login");
             request.Content = new StringContent(JsonSerializer.Serialize(loginDto), Encoding.UTF8, "application/json");
@@ -69,13 +233,31 @@ namespace ProductsManagement.Models
                     PropertyNameCaseInsensitive = true
                 });
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Token);
-                return Tuple.Create(token.Token, token.Role);
+                return ApiResponse<Tuple<string, string>>.Ok(
+                    new Tuple<string, string>(token.Token, token.Role),
+                    "Login successful", (int)response.StatusCode);
             }
             else
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
-                return new Tuple<string, string>(null, errorContent);
+                return ApiResponse<Tuple<string, string>>.Fail(
+                    $"Login failed: {errorContent}", (int)response.StatusCode);
             }
+        }
+
+
+        public async Task<ApiResponse<string>> Logout()
+        {
+            var response = await _httpClient.PostAsync($"{_baseUrl}api/Account/Logout", null);
+            if(!response.IsSuccessStatusCode)
+            {
+                return ApiResponse<string>.Fail(
+                    "Failed to log out", (int)response.StatusCode);
+            }
+            _httpClient.DefaultRequestHeaders.Authorization = null;
+            return ApiResponse<string>.Ok(
+                "Logged out successfully", null, (int)response.StatusCode);
+
         }
     }
 }
