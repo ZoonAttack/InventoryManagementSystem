@@ -28,10 +28,10 @@ namespace ProductsManagement.Controllers
             return Ok(products);
         }
 
-        [HttpGet("products/{category}")]
-        public async Task<IActionResult> GetProductsByCategory(string category)
+        [HttpGet("products/{categoryId}")]
+        public async Task<IActionResult> GetProductsByCategory(int categoryId)
         {
-            var products = await _dbContext.Products.Where(x => x.Category != null && x.Category.Name.Equals(category))
+            var products = await _dbContext.Products.Where(x => x.Category != null && x.Category.Id.Equals(categoryId))
                 .Select(x => x.ToProductSummaryDto())
                 .ToListAsync();
 
@@ -63,7 +63,8 @@ namespace ProductsManagement.Controllers
                 Description = dto.Description,
                 Price = dto.Price,
                 ImageUrl = dto.ImageUrl,
-                CategoryId = dto.CategoryId
+                CategoryId = dto.CategoryId,
+                Category = await _dbContext.Categories.FindAsync(dto.CategoryId) ?? throw new ArgumentException($"Category with ID {dto.CategoryId} does not exist.")
             };
             try
             {
@@ -91,6 +92,8 @@ namespace ProductsManagement.Controllers
             product.Price = dto.Price;
             product.ImageUrl = dto.ImageUrl;
             product.CategoryId = dto.CategoryId;
+            product.Category = await _dbContext.Categories.FindAsync(dto.CategoryId)
+                ?? throw new ArgumentException($"Category with ID {dto.CategoryId} does not exist.");
             _dbContext.Products.Update(product);
             await _dbContext.SaveChangesAsync();
             return Ok(product.ToProductDetailsDto());
