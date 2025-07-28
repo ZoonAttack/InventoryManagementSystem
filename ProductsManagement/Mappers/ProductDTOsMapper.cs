@@ -1,4 +1,5 @@
 ﻿using ProductsManagement.Data;
+using Shared.DTOs;
 
 namespace ProductsManagement.DTOs.Mappers
 {

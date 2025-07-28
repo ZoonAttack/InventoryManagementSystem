@@ -1,6 +1,6 @@
 using Admin.Models;
 using Microsoft.AspNetCore.Mvc;
-using ProductsManagement.DTOs;
+using Shared.DTOs;
 using ProductsManagement.Models;
 using System.Diagnostics;
 
@@ -21,7 +21,6 @@ namespace Admin.Controllers
             return View();
 
         }
-
         [HttpPost]
         public async Task<IActionResult> Login(LoginUserDto loginDto)
         {
@@ -41,6 +40,7 @@ namespace Admin.Controllers
         }
         public IActionResult Dashboard()
         {
+            //List<ProductSummaryDto> products = _apiCall.GetProducts();
             return View();
         }
 

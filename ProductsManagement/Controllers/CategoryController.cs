@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using ProductsManagement.Context;
 using ProductsManagement.DTOs;
+using Shared.DTOs;
 
 namespace ProductsManagement.Controllers
 {

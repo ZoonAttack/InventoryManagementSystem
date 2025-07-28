@@ -1,0 +1,57 @@
+﻿@using Shared.DTOs
+@model LoginUserDto
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="~/css/Login.css" />
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <span class="app-name" id="app-name">Products Management System</span>
+        </div>
+        <div class="language-toggle">
+            <div class="dropdown">
+                <button class="dropbtn">
+                    🌐 <span id="lang-label">EN</span>
+                    <svg class="arrow" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 320 512">
+                        <path fill="currentColor" d="M96 192l64 64 64-64H96z" />
+                    </svg>
+                </button>
+                <div class="dropdown-content">
+                    <a href="#" onclick="setLanguage('en')">🇺🇸 English</a>
+                    <a href="#" onclick="setLanguage('ar')">🇸🇦 العربية</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="login-container">
+        <form class="login-form" asp-action="Login" asp-controller="Admin" method="post">
+            <h2 id="login-title">Admin Login</h2>
+
+            <div class="input-group">
+                <label for="email" id="email-label">Email</label>
+                <input type="email" id="email" name="Email" value="@Model?.Email" required />
+            </div>
+
+            <div class="input-group">
+                <label for="password" id="password-label">Password</label>
+                <input type="password" id="password" name="Password" required />
+            </div>
+
+            <button type="submit" id="login-button">Login</button>
+
+            @if (ViewData["ErrorMessage"] != null)
+            {
+                <p class="error-message">@ViewData["ErrorMessage"]</p>
+            }
+        </form>
+    </div>
+</body>
+</html>

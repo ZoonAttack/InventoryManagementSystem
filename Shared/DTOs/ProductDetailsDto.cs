@@ -1,5 +1,5 @@
 ﻿
-namespace ProductsManagement.DTOs
+namespace Shared.DTOs
 {
     public class ProductDetailsDto
     {

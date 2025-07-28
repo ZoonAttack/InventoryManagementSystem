@@ -7,6 +7,7 @@ using ProductsManagement.Context;
 using ProductsManagement.Data;
 using ProductsManagement.Data.Utility;
 using ProductsManagement.DTOs;
+using Shared.DTOs;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;

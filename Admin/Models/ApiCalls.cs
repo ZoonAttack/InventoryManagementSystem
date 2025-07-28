@@ -1,5 +1,4 @@
-﻿using Admin.DTOs;
-using ProductsManagement.DTOs;
+﻿using Shared.DTOs;
 using System.Text;
 using System.Text.Json;
 

@@ -1,6 +1,4 @@
-﻿using ProductsManagement.Data;
-
-namespace ProductsManagement.DTOs
+﻿namespace Shared.DTOs
 {
     public class OrderItemDto
     {

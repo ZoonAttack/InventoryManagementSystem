@@ -4,8 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using ProductsManagement.Context;
 using ProductsManagement.Data;
 using ProductsManagement.Data.Utility;
-using ProductsManagement.DTOs;
 using ProductsManagement.DTOs.Mappers;
+using Shared.DTOs;
 using System.Security.Claims;
 
 namespace ProductsManagement.Controllers
@@ -20,9 +20,6 @@ namespace ProductsManagement.Controllers
         {
             _dbContext = dbContext;
         }
-
-        [HttpPost("create")]
-
 
         [HttpGet("orders")]
         [Authorize(Policy = "AdminOnly")]

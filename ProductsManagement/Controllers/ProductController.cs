@@ -5,6 +5,7 @@ using ProductsManagement.Context;
 using ProductsManagement.Data;
 using ProductsManagement.DTOs;
 using ProductsManagement.DTOs.Mappers;
+using Shared.DTOs;
 
 namespace ProductsManagement.Controllers
 {

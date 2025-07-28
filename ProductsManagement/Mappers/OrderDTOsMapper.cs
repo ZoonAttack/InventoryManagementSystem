@@ -1,4 +1,5 @@
 ﻿using ProductsManagement.Data;
+using Shared.DTOs;
 
 namespace ProductsManagement.DTOs.Mappers
 {
@@ -27,7 +28,7 @@ namespace ProductsManagement.DTOs.Mappers
                 OrderId = order.Id,
                 CreatedAt = order.CreatedAt,
                 Status = order.Status.ToString(),
-                UserName = order.User?.UserName ?? "Unknown User",
+                OrderFor = order.User?.UserName ?? "Unknown User",
                 OrderItems = order.OrderItems.Select(item => item.ToOrderItemDto()).ToList(),
                 TotalAmount = order.TotalAmount,
                 Invoice = order.Invoice?.ToInvoiceDto(order),
@@ -81,11 +82,10 @@ namespace ProductsManagement.DTOs.Mappers
             {
                 Product = new Product
                 {
-                    Name = item.ProductName,
+                    Id = item.ProductId,
                     ImageUrl = item.ImageURL
                 },
                 Quantity = item.Quantity,
-                UnitPrice = item.UnitPrice
             }).ToList();
         }
     }

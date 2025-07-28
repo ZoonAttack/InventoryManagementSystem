@@ -1,3 +1,5 @@
+using ProductsManagement.Models;
+
 namespace Admin
 {
     public class Program
@@ -8,7 +10,7 @@ namespace Admin
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-
+            builder.Services.AddHttpClient<ApiCalls>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
