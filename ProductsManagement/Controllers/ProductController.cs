@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProductsManagement.Context;
 using ProductsManagement.Data;
-using ProductsManagement.Data.Utility;
+using Shared.Utility;
 using ProductsManagement.DTOs;
 using ProductsManagement.DTOs.Mappers;
 using Shared.DTOs;

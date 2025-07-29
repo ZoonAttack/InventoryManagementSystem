@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Shared.DTOs;
 using ProductsManagement.Models;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Shared.Utility;
 
 namespace Admin.Controllers
 {
@@ -43,10 +45,197 @@ namespace Admin.Controllers
             ViewData["ErrorMessage"] = data.Item2 ?? "Invalid login.";
             return View(loginDto);
         }
-        public async Task<IActionResult> Dashboard()
+
+        [HttpPost]
+        public async Task<IActionResult> Logout()
         {
-            return View();
+            await _apiCall.LogoutAsync();
+            // Clear session or cookie
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login", "Admin");
         }
 
+
+        public async Task<IActionResult> Dashboard()
+        {
+            var products = await _apiCall.GetProductsAsync();
+            var productsData = products.Data;
+            var orders = await _apiCall.GetOrdersAsync();
+            var ordersData = orders.Data;
+            AdminDashboardViewModel model = new AdminDashboardViewModel()
+            {
+                Products = productsData ?? new List<ProductSummaryDto>(),
+                Orders = ordersData ?? new List<OrderSummaryDto>()
+            };
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> UpdateProduct(int id)
+        {
+
+            var result = await _apiCall.GetProductAsync(id);
+            var categoryResult = await _apiCall.GetCategoryAsync(result.Data.Category);
+            int categoryId = categoryResult.Data!.CategoryId;
+            if (!result.Success) return NotFound(result.Message);
+            var dto = new CreateProductDto
+            {
+                Name = result.Data.Name,
+                Description = result.Data.Description,
+                Price = result.Data.Price,
+                Status = result.Data.Status.ToString(),
+                ImageUrl = result.Data.ImageUrl,
+                CategoryId = categoryId
+            };
+            
+            var categories = await _apiCall.GetCategoriesAsync();
+
+            UpdateProductViewModel vm = new UpdateProductViewModel
+            {
+                ProductId = id,
+                Product = dto,
+                Categories = categories.Data!,
+                productStatuses = Enum.GetValues(typeof(ProductStatus)).Cast<ProductStatus>().ToList()
+            };
+            return View("UpdateProduct", vm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateProduct(int id, CreateProductDto dto)
+        {
+            var result = await _apiCall.UpdateProduct(dto, id);
+            if (!result.Success)
+            {
+                ViewBag.ProductId = id;
+                ViewBag.Error = result.Message;
+                return View(dto);
+            }
+
+            TempData["Message"] = "Product updated successfully";
+            return RedirectToAction("Dashboard");
+        }
+        [HttpGet]
+        public IActionResult CreateProduct() => View();
+
+        [HttpPost]
+        public async Task<IActionResult> CreateProduct(CreateProductDto dto)
+        {
+            var result = await _apiCall.CreateProduct(dto);
+            if (!result.Success)
+            {
+                ViewBag.Error = result.Message;
+                return View(dto);
+            }
+
+            TempData["Message"] = "Product created successfully";
+            return RedirectToAction("Dashboard");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> UpdateOrder(int id)
+        {
+
+            var result = await _apiCall.GetOrderAsync(id);
+            if (!result.Success) return NotFound(result.Message);
+            var dto = new CreateOrderDto
+            {
+                OrderItems = result.Data.OrderItems,
+                ShippingAddress = result.Data.ShippingAddress,
+                PaymentMethod = result.Data.Payment.PaymentMethod,
+                Status = result.Data.Status.ToString()
+            };
+
+            UpdateOrderViewModel vm = new UpdateOrderViewModel
+            {
+                OrderId = id,
+                Order = dto,
+                OrderStatuses = Enum.GetValues(typeof(OrderStatus)).Cast<OrderStatus>().ToList()
+            };
+            return View("UpdateProduct", vm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateOrder(int id, CreateProductDto dto)
+        {
+            var result = await _apiCall.UpdateProduct(dto, id);
+            if (!result.Success)
+            {
+                ViewBag.ProductId = id;
+                ViewBag.Error = result.Message;
+                return View(dto);
+            }
+
+            TempData["Message"] = "Product updated successfully";
+            return RedirectToAction("Dashboard");
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeleteProduct(int productId)
+        {
+            var result = await _apiCall.DeleteProductAsync(productId);
+            if (result.Success)
+            {
+                return RedirectToAction("Dashboard");
+            }
+            else
+            {
+                ViewData["ErrorMessage"] = result.Message ?? "Failed to delete product.";
+                return RedirectToAction("Dashboard");
+            }
+        }
+
+        [HttpGet]
+        public IActionResult CreateOrder() => View();
+
+        [HttpPost]
+        public async Task<IActionResult> CreateOrder(CreateOrderDto dto)
+        {
+            var result = await _apiCall.CreateOrderAsync(dto);
+            if (!result.Success)
+            {
+                ViewBag.Error = result.Message;
+                return View(dto);
+            }
+
+            TempData["Message"] = "Order created";
+            return RedirectToAction("Dashboard");
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteOrder(int OrderId)
+        {
+            var result = await _apiCall.DeleteOrderAsync(OrderId);
+            if (result.Success)
+            {
+                return RedirectToAction("Dashboard");
+            }
+            else
+            {
+                ViewData["ErrorMessage"] = result.Message ?? "Failed to delete order.";
+                return RedirectToAction("Dashboard");
+            }
+        }
+
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetDetailsPartial(int id, string type)
+        {
+            if (type == "product")
+            {
+                var product = await _apiCall.GetProductAsync(id);
+                var productData = product.Data;
+                return PartialView("_ProductDetailPartial", productData);
+            }
+            else if (type == "order")
+            {
+                var order = await _apiCall.GetOrderAsync(id);
+                var orderData = order.Data;
+                return PartialView("_OrderDetailPartial", orderData);
+            }
+
+            return BadRequest("Unknown type.");
+        }
     }
 }

@@ -8,6 +8,9 @@
         public string OrderFor { get; set; }
         public List<OrderItemDto> OrderItems { get; set; } = new List<OrderItemDto>();
         public double TotalAmount { get; set; }
+
+        public string ShippingAddress { get; set; }
+
         public InvoiceDto Invoice { get; set; }
         public PaymentDto Payment { get; set; }
     }

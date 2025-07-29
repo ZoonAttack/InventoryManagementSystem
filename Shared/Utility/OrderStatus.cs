@@ -1,4 +1,4 @@
-﻿namespace ProductsManagement.Data.Utility
+﻿namespace Shared.Utility
 {
     public enum OrderStatus
     {

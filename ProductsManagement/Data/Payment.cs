@@ -1,4 +1,4 @@
-﻿using ProductsManagement.Data.Utility;
+﻿using Shared.Utility;
 
 namespace ProductsManagement.Data
 {

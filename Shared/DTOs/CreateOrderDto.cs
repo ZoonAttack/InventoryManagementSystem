@@ -7,5 +7,7 @@
 
         public string ShippingAddress { get; set; }
         public string PaymentMethod { get; set; }
+
+        public string Status { get; set; }
     }
 }

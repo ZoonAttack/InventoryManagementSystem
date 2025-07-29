@@ -23,6 +23,7 @@ namespace ProductsManagement.DTOs.Mappers
         {
             return new ProductSummaryDto
             {
+                ProductId = product.Id,
                 Name = product.Name,
                 ImageUrl = product.ImageUrl,
                 Status = product.Status.ToString(),

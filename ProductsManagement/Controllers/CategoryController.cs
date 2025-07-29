@@ -23,21 +23,41 @@ namespace ProductsManagement.Controllers
         {
             var categories = await _dbContext.Categories
                                             .Include(c => c.Products)
-                                            .Select(x => new CategoryDetailsDto() {
+                                            .Select(x => new CategorySummaryDto() {
+                                                    CategoryId = x.Id,
                                                     Name = x.Name,
-                                                    Description = x.Description,
-                                                    Products = x.Products.Select(p => new ProductSummaryDto
-                                                    {
-                                                        Name = p.Name,
-                                                        Status = p.Status.ToString(),
-                                                        Price = p.Price,
-                                                        ImageUrl = p.ImageUrl
-                                                    }).ToList()
+                                                    Description = x.Description
                                             }).ToListAsync();
 
             return Ok(categories);
         }
 
+
+        [HttpGet("category/{name}")]
+        public async Task<IActionResult> GetCategory(string name)
+        {
+            var category = await _dbContext.Categories
+                                           .Include(c => c.Products)
+                                           .Where(c => c.Name == name)
+                                           .Select(x => new CategoryDetailsDto()
+                                           {
+                                               CategoryId = x.Id,
+                                               Name = x.Name,
+                                               Description = x.Description,
+                                               Products = x.Products.Select(p => new ProductSummaryDto
+                                               {
+                                                   Name = p.Name,
+                                                   Status = p.Status.ToString(),
+                                                   Price = p.Price,
+                                                   ImageUrl = p.ImageUrl
+                                               }).ToList()
+                                           }).FirstOrDefaultAsync();
+            if (category == null)
+            {
+                return NotFound("Category not found.");
+            }
+            return Ok(category);
+        }
 
         [HttpPost("create")]
         [Authorize(Policy = "AdminOnly")]

@@ -4,6 +4,7 @@ namespace Shared.DTOs
 {
     public class OrderSummaryDto
     {
+        public int OrderId { get; set; }
         public DateTime CreatedAt { get; set; }
 
         public string Status { get; set; }

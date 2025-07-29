@@ -12,6 +12,7 @@ namespace ProductsManagement.DTOs.Mappers
 
             return new OrderSummaryDto
             {
+                OrderId = order.Id,
                 CreatedAt = order.CreatedAt,
                 Status = order.Status.ToString(),
                 OrderFor = order.User?.UserName ?? "Unknown User",

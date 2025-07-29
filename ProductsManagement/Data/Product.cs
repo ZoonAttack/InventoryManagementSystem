@@ -1,5 +1,4 @@
-﻿using ProductsManagement.Data.Utility;
-using System.ComponentModel.DataAnnotations;
+﻿using Shared.Utility;
 
 namespace ProductsManagement.Data
 {
