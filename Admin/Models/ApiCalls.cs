@@ -10,7 +10,8 @@ namespace ProductsManagement.Models
         private readonly HttpClient _httpClient;
         //private string adminToken = string.Empty;
        // private readonly string _apiKey;
-        private readonly string _baseUrl = "https://localhost:7264/"; // Adjust the base URL as needed
+        private readonly string _baseUrl = "https://localhost:7264/";
+        // Adjust the base URL as needed
         public ApiCalls(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;

@@ -1,0 +1,39 @@
+﻿body {
+    background-color: #fff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #f8b6c1; /* وردي للنصوص */
+    padding: 20px;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #ff69b4;
+}
+
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #333; /* رمادي داكن للجدول */
+    color: #f8b6c1; /* نص وردي */
+    box-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+}
+
+    .orders-table th,
+    .orders-table td {
+        border: 1px solid #ff69b4;
+        padding: 12px 15px;
+        text-align: center;
+    }
+
+    .orders-table thead th {
+        background-color: #444;
+        font-weight: bold;
+    }
+
+    .orders-table tbody tr:hover {
+        background-color: #ff69b4;
+        color: #fff;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }

@@ -38,10 +38,18 @@ namespace Admin.Controllers
             ViewData["ErrorMessage"] = result.Item2 ?? "Invalid login.";
             return View(loginDto);
         }
+        [HttpGet]
         public async Task<IActionResult> Dashboard()
         {
+            //var products = await _apiCall.GetProductsAsync();
             return View();
         }
+        public async Task<IActionResult> Order()
+        {
+            //var orders = await _apiCalls.GetOrdersAsync();
+            return View();
+        }
+
 
     }
 }

@@ -1,0 +1,58 @@
+﻿@model List<Shared.DTOs.ProductSummaryDto>
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="~/css/Dashboard.css" />
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <span class="app-name" id="app-name">My Dashboard</span>
+        </div>
+
+        <div class="button-row">
+            <button class="pink-button" onclick="location.href='/admin/orders'">Orders</button>
+            <button class="pink-button" onclick="window.print()">Print</button>
+            <button class="pink-button" onclick="alert('Else clicked')">Else</button>
+        </div>
+
+        <div>
+            <button class="pink-button" id="logout-button">Logout</button>
+        </div>
+    </nav>
+        <h2 class="section-title">Products</h2>
+
+        @* <div class="products-grid"> *@
+        @*     @foreach (var product in Model) *@
+        @*     { *@
+        @*         <div class="card"> *@
+        @*             <img src="@product.ImageUrl" alt="@product.Name" /> *@
+        @*             <div class="card-body"> *@
+        @*                 <h5>@product.Name</h5> *@
+        @*                 <p>Status: @product.Status</p> *@
+        @*                 <p>Price: $@product.Price.ToString("F2")</p> *@
+        @*                 <a href="/product/details/@product.Name" class="btn-details">Details</a> *@
+        @*             </div> *@
+        @*         </div> *@
+        @*     } *@
+        @* </div> *@
+    </main>
+        <script>
+            document.getElementById('logout-button').addEventListener('click', () => {
+                // قم بحذف التوكن أو الجلسة هنا حسب النظام عندك
+                fetch('/auth/logout', {
+                    method: 'POST'
+                }).then(() => {
+                    window.location.href = '/auth/login';
+                }).catch(() => {
+                    alert("Logout failed.");
+                });
+            });
+    </script>
+</body>
+</html>

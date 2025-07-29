@@ -30,7 +30,7 @@ namespace Admin
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Admin}/{action=Order}/{id?}");
 
             app.Run();
         }
