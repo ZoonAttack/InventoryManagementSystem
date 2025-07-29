@@ -1,0 +1,170 @@
+﻿﻿body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #fff;
+    color: #f8b6c1;
+}
+
+/* ==== NAVBAR ==== */
+.navbar {
+    background-color: #1f1f1f; /* رمادي داكن */
+    color: #fff;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+   
+}
+
+/* ==== CENTER BUTTONS ==== */
+.navbar .button-row {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+}
+
+/* ==== Logout Button ==== */
+.logout-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+#logout-button {
+    padding: 8px 16px;
+    background-color: #ff69b4;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+    #logout-button:hover {
+        background-color: #ff1493;
+    }
+
+/* ==== Buttons in navbar ==== */
+.pink-button {
+    padding: 10px 20px;
+    background-color: #ff69b4;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+    .pink-button:hover {
+        background-color: #ff1493;
+    }
+
+/* ==== MAIN ==== */
+.dashboard-main {
+    padding: 2rem;
+}
+
+/* ==== PRODUCTS GRID ==== */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.btn-details {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 8px 16px;
+    background-color: #ff69b4;
+    color: #fff;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+    .btn-details:hover {
+        background-color: #ff1493;
+    }
+
+/* ==== SECTION TITLE ==== */
+.section-title {
+    color: #1f1f1f;
+    font-size: 1.8rem;
+    margin-top: 2rem;
+    border-bottom: 2px solid #f8b6c1;
+    padding-bottom: 0.5rem;
+    width: fit-content;
+}
+
+.products-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+    background-color: #f9f9f9; /* خلفية خفيفة للصفحة */
+}
+
+/* === بطاقة موحدة للمنتجات والطلبات === */
+.card {
+    background-color: #1f1f1f; /* رمادي غامق مثل النافبار */
+    color: #f8b6c1; /* نص وردي فاتح */
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(255, 105, 180, 0.4); /* ظل وردي */
+    }
+
+/* === محتوى الكرت === */
+.card-body {
+    padding: 1.2rem;
+}
+
+    .card-body h5 {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: #ff69b4; /* وردي متوسط */
+        margin-bottom: 0.75rem;
+    }
+
+    .card-body p {
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+        color: #fff;
+    }
+.row > .col {
+    display: flex;
+    justify-content: center;
+}
+
+
+.btn-details {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 8px 15px;
+    background-color: #f8b6c1; /* خلفية وردي */
+    color: #3a3a3a; /* نص رمادي غامق */
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+    .btn-details:hover {
+        background-color: #ff69b4; /* وردي أفتح عند المرور */
+        color: #fff;
+    }
