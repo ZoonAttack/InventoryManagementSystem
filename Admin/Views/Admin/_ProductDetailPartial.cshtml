@@ -13,11 +13,11 @@
     <p><strong>Status:</strong> @Model.Status</p>
 
     <div class="actions mt-4" style="display: flex; gap: 10px; flex-wrap: wrap;">
-        <form method="get" asp-action="UpdateProduct" asp-route-id="@Model.Id" style="display:inline;">
+        <form method="get" asp-action="UpdateProduct" asp-route-Id="@Model.Id" style="display:inline;">
             <button type="submit" class="pink-button">Update Product</button>
         </form>
 
-        <form method="post" asp-action="DeleteProduct" asp-route-id="@Model.Id" style="display:inline;">
+        <form method="post" asp-action="DeleteProduct" asp-route-Id="@Model.Id" style="display:inline;">
             <button type="submit" class="btn btn-danger">Delete Product</button>
         </form>
     </div>

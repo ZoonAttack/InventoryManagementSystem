@@ -55,7 +55,7 @@
             card.setAttribute("data-index", index);
 
             const productOptions = @Html.Raw(Json.Serialize(Model.Products))
-                .map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+                .map(p => `<option value="${p.ProductId}">${p.Name}</option>`).join('');
 
             card.innerHTML = `
                 <h5 class="card-title">Order Item ${index + 1}</h5>

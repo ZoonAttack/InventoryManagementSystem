@@ -28,11 +28,11 @@
     <p><strong>Invoice Number:</strong> @Model.Invoice?.InvoiceNumber</p>
 
     <div class="actions mt-4" style="display: flex; gap: 10px; flex-wrap: wrap;">
-        <form method="get" asp-action="UpdateOrder" asp-route-id="@Model.OrderId" style="display:inline;">
+        <form method="get" asp-action="UpdateOrder" asp-route-orderId="@Model.OrderId" style="display:inline;">
             <button type="submit" class="pink-button">Update Order</button>
         </form>
 
-        <form method="post" asp-action="DeleteOrder" asp-route-id="@Model.OrderId" style="display:inline;">
+        <form method="post" asp-action="DeleteOrder" asp-route-orderId="@Model.OrderId" style="display:inline;">
             <button type="submit" class="btn btn-danger">Delete Order</button>
         </form>
     </div>

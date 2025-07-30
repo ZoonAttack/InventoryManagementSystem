@@ -121,7 +121,7 @@ namespace ProductsManagement.Controllers
                 _dbContext.Invoices.Add(invoice);
                 //5 - save order, payment, and invoice in database
                 await _dbContext.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order.ToOrderSummaryDto());
+                return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order.ToOrderDetailsDto());
             }
             catch (Exception ex)
             {
@@ -132,14 +132,16 @@ namespace ProductsManagement.Controllers
 
         [HttpPut("update/{id}")]
         [Authorize(Policy = "AdminOnly")]
-        public async Task<IActionResult> UpdateOrderStatus(int id, string status)
+        public async Task<IActionResult> UpdateOrder(int id, [FromBody] CreateOrderDto dto)
         {
             Order? order = await _dbContext.Orders.FindAsync(id);
             if (order == null)
             {
                 return NotFound($"Order with ID {id} not found.");
             }
-            order.Status = (OrderStatus)Enum.Parse(typeof(OrderStatus), status);
+            order.Status = (OrderStatus)Enum.Parse(typeof(OrderStatus), dto.Status);
+            order.ShippingAddress = dto.ShippingAddress;
+            order.Payment.Method = (PaymentMethods)Enum.Parse(typeof(PaymentMethods),dto.PaymentMethod);
             _dbContext.Orders.Update(order);
             await _dbContext.SaveChangesAsync();
             return Ok(order.ToOrderSummaryDto());

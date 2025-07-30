@@ -102,9 +102,9 @@ namespace Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateProduct(int id, CreateProductDto dto)
+        public async Task<IActionResult> UpdateProduct(int id, CreateProductViewModel dto)
         {
-            var result = await _apiCall.UpdateOrderAsync(dto, id);
+            var result = await _apiCall.UpdateProductAsync(dto.Product, id);
             if (!result.Success)
             {
                 ViewBag.ProductId = id;
@@ -129,10 +129,10 @@ namespace Admin.Controllers
             return View(vm);
         }
 
-            [HttpPost]
-        public async Task<IActionResult> CreateProduct(CreateProductDto dto)
+        [HttpPost]
+        public async Task<IActionResult> CreateProduct(CreateProductViewModel dto)
         {
-            var result = await _apiCall.CreateProductAsync(dto);
+            var result = await _apiCall.CreateProductAsync(dto.Product);
             if (!result.Success)
             {
                 ViewBag.Error = result.Message;
@@ -167,9 +167,9 @@ namespace Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateOrder(int id, CreateProductDto dto)
+        public async Task<IActionResult> UpdateOrder(int id, CreateOrderViewModel dto)
         {
-            var result = await _apiCall.UpdateOrderAsync(dto, id);
+            var result = await _apiCall.UpdateOrderAsync(dto.Order, id);
             if (!result.Success)
             {
                 ViewBag.OrderId = id;
@@ -181,16 +181,16 @@ namespace Admin.Controllers
             return RedirectToAction("Dashboard");
         }
         [HttpPost]
-        public async Task<IActionResult> DeleteProduct(int productId)
+        public async Task<IActionResult> DeleteProduct(int Id)
         {
-            var result = await _apiCall.DeleteProductAsync(productId);
+            var result = await _apiCall.DeleteProductAsync(Id);
             if (result.Success)
             {
                 return RedirectToAction("Dashboard");
             }
             else
             {
-                ViewData["ErrorMessage"] = result.Message ?? "Failed to delete product.";
+                ViewData["ErrorMessage"] = result.Message ?? "Failed to delete product.Has ongoing items";
                 return RedirectToAction("Dashboard");
             }
         }

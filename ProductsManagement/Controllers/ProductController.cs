@@ -76,10 +76,11 @@ namespace ProductsManagement.Controllers
             {
                 return BadRequest($"Error creating product: {ex.Message}");
             }
-            return Ok(product.ToProductDetailsDto());
+            return CreatedAtAction(nameof(GetProduct), new { productId = product.Id }, product.ToProductDetailsDto());
+
         }
-        
-        
+
+
         [HttpPut("update/{productId}")]
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> UpdateProduct(int productId, [FromBody] CreateProductDto dto)

@@ -159,7 +159,7 @@ namespace ProductsManagement.Models
             }
         }
 
-        public async Task<ApiResponse<ProductDetailsDto>> UpdateOrderAsync(CreateProductDto dto, int productId)
+        public async Task<ApiResponse<ProductDetailsDto>> UpdateProductAsync(CreateProductDto dto, int productId)
         {
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, $"{_baseUrl}api/product/update/{productId}");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token);
@@ -185,13 +185,13 @@ namespace ProductsManagement.Models
 
         public async Task<ApiResponse<string>> DeleteProductAsync(int productId)
         {
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, $"{_baseUrl}api/product/delete/{productId}");
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, $"{_baseUrl}api/product/destroy/{productId}");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token);
             var response = await _httpClient.SendAsync(request);
             if (!response.IsSuccessStatusCode)
             {
                 // Handle error response if needed
-                return ApiResponse<string>.Fail("Failed to delete product", (int)response.StatusCode);
+                return ApiResponse<string>.Fail($"Failed to delete product: {response.ReasonPhrase}", (int)response.StatusCode);
             }
             // Optionally, you can handle successful deletion here
             return ApiResponse<string>.Ok("Product deleted successfully", null, (int)response.StatusCode);
@@ -271,11 +271,11 @@ namespace ProductsManagement.Models
             }
         }
 
-        public async Task<ApiResponse<OrderSummaryDto>> UpdateOrderStatusAsync(int orderId, string status)
+        public async Task<ApiResponse<OrderSummaryDto>> UpdateOrderAsync(CreateOrderDto dto, int orderId)
         {
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, $"{_baseUrl}api/order/update/{orderId}");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token);
-            request.Content = new StringContent(status, Encoding.UTF8, "application/json");
+            request.Content = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
 
             var response = await _httpClient.SendAsync(request);
             if (response.IsSuccessStatusCode)
@@ -296,16 +296,16 @@ namespace ProductsManagement.Models
 
         public async Task<ApiResponse<string>> DeleteOrderAsync(int orderId)
         {
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, $"{_baseUrl}api/order/delete/{orderId}");
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, $"{_baseUrl}api/order/destroy/{orderId}");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token);
             var response = await _httpClient.SendAsync(request);
             if (!response.IsSuccessStatusCode)
             {
                 // Handle error response if needed
-                return ApiResponse<string>.Fail("Failed to delete product", (int)response.StatusCode);
+                return ApiResponse<string>.Fail("Failed to delete Order", (int)response.StatusCode);
             }
             // Optionally, you can handle successful deletion here
-            return ApiResponse<string>.Ok("Product deleted successfully", null, (int)response.StatusCode);
+            return ApiResponse<string>.Ok("Order deleted successfully", null, (int)response.StatusCode);
         }
 
         public async Task<ApiResponse<Tuple<string, string>>> LoginAsync(LoginUserDto loginDto)
