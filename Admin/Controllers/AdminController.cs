@@ -46,14 +46,15 @@ namespace Admin.Controllers
             return View(loginDto);
         }
 
+
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
             await _apiCall.LogoutAsync();
-            // Clear session or cookie
             HttpContext.Session.Clear();
             return RedirectToAction("Login", "Admin");
         }
+
 
 
         public async Task<IActionResult> Dashboard()
@@ -237,5 +238,7 @@ namespace Admin.Controllers
 
             return BadRequest("Unknown type.");
         }
+
     }
+
 }

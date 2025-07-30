@@ -16,19 +16,46 @@
             <span class="app-name" id="app-name">Products Management System</span>
         </div>
         <div class="language-toggle">
-			<div class="dropdown">
-                <button class="dropbtn">
+            <div class="dropdown">
+                <button class="pink-button dropdown-toggle" onclick="toggleDropdown()">
                     🌐 <span id="lang-label">EN</span>
                     <svg class="arrow" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 320 512">
                         <path fill="currentColor" d="M96 192l64 64 64-64H96z" />
                     </svg>
                 </button>
-                <div class="dropdown-content">
-                    <a href="#" onclick="setLanguage('en')">🇺🇸 English</a>
-                    <a href="#" onclick="setLanguage('ar')">🇸🇦 العربية</a>
+                <div id="languageDropdown" class="dropdown-content hidden">
+                    <a href="#" onclick="event.preventDefault(); setLanguage('en')">🇺🇸 English</a>
+                    <a href="#" onclick="event.preventDefault(); setLanguage('ar')">🇸🇦 العربية</a>
+
                 </div>
             </div>
         </div>
+        <script>
+            function toggleDropdown() {
+                const dropdown = document.getElementById("languageDropdown");
+                dropdown.classList.toggle("hidden");
+            }
+
+            function setLanguage(lang) {
+                localStorage.setItem('lang', lang);
+                document.getElementById('lang-label').innerText = lang.toUpperCase();
+                document.getElementById("languageDropdown").classList.add("hidden");
+            }
+
+            window.addEventListener("click", function (e) {
+                const btn = document.querySelector(".dropdown-toggle");
+                const dropdown = document.getElementById("languageDropdown");
+                if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.add("hidden");
+                }
+            });
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const savedLang = localStorage.getItem('lang') || 'en';
+                document.getElementById('lang-label').innerText = savedLang.toUpperCase();
+            });
+        </script>
+
     </nav>
 
     <div class="login-container">

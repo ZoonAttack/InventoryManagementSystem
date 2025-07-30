@@ -1,23 +1,40 @@
-﻿// حفظ اللغة وتحديث الواجهة
+﻿const translations = {
+    en: {
+        appName: "Products Management System",
+        loginTitle: "Admin Login",
+        email: "Email",
+        password: "Password",
+        loginButton: "Login"
+    },
+    ar: {
+        appName: "نظام إدارة المنتجات",
+        loginTitle: "تسجيل دخول المدير",
+        email: "البريد الإلكتروني",
+        password: "كلمة المرور",
+        loginButton: "تسجيل الدخول"
+    }
+};
+
+function toggleDropdown() {
+    const dropdown = document.getElementById("languageDropdown");
+    dropdown.classList.toggle("hidden");
+}
+
 function setLanguage(lang) {
     localStorage.setItem('lang', lang);
     document.getElementById('lang-label').innerText = lang.toUpperCase();
-
-    if (lang === 'ar') {
-        document.getElementById('login-title').innerText = 'تسجيل دخول المشرف';
-        document.getElementById('email-label').innerText = 'البريد الإلكتروني';
-        document.getElementById('password-label').innerText = 'كلمة المرور';
-        document.getElementById('login-button').innerText = 'تسجيل الدخول';
-    } else {
-        document.getElementById('login-title').innerText = 'Admin Login';
-        document.getElementById('email-label').innerText = 'Email';
-        document.getElementById('password-label').innerText = 'Password';
-        document.getElementById('login-button').innerText = 'Login';
-    }
+    document.getElementById("languageDropdown").classList.add("hidden");
 }
 
-// عند تحميل الصفحة – استرجاع اللغة وتطبيقها
+window.addEventListener("click", function (e) {
+    const btn = document.querySelector(".dropdown-toggle");
+    const dropdown = document.getElementById("languageDropdown");
+    if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.add("hidden");
+    }
+});
+
 document.addEventListener('DOMContentLoaded', () => {
-    const lang = localStorage.getItem('lang') || 'en';
-    setLanguage(lang);
+    const savedLang = localStorage.getItem('lang') || 'en';
+    document.getElementById('lang-label').innerText = savedLang.toUpperCase();
 });

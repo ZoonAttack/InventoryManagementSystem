@@ -2,12 +2,13 @@
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #fff;
-    color: #f8b6c1;
+    color: #fff;
 }
+
 
 /* ==== NAVBAR ==== */
 .navbar {
-    background-color: #1f1f1f; /* رمادي داكن */
+    background-color: #1f1f1f;
     color: #fff;
     padding: 1rem 2rem;
     display: flex;
@@ -15,21 +16,21 @@
     align-items: center;
 }
 
-.navbar-brand {
+.app-name {
     font-size: 1.5rem;
+    color: #fff;
     font-weight: bold;
-   
 }
 
 /* ==== CENTER BUTTONS ==== */
-.navbar .button-row {
+/*.navbar .button-row {
     display: flex;
     gap: 1rem;
     justify-content: center;
     align-items: center;
     flex: 1;
 }
-
+*/
 /* ==== Logout Button ==== */
 .logout-container {
     display: flex;
