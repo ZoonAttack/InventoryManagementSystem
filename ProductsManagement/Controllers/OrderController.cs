@@ -80,6 +80,8 @@ namespace ProductsManagement.Controllers
                         return BadRequest($"Product with ID {item.ProductId} not found.");
                     }
                     totalAmount += product.Price * item.Quantity;
+                    item.ProductId = product.Id;
+                    item.ImageURL = product.ImageUrl;
                 }
                 //2- create the order
                 string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

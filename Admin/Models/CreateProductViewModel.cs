@@ -3,7 +3,7 @@ using Shared.Utility;
 
 namespace Admin.Models
 {
-    public class UpdateProductViewModel
+    public class CreateProductViewModel
     {
         public int ProductId { get; set; }
         public CreateProductDto Product { get; set; }

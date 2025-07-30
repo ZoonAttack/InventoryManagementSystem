@@ -34,7 +34,8 @@ namespace ProductsManagement.DTOs.Mappers
                 OrderItems = order.OrderItems.Select(item => item.ToOrderItemDto()).ToList(),
                 TotalAmount = order.TotalAmount,
                 Invoice = order.Invoice?.ToInvoiceDto(order),
-                Payment = order.Payment?.ToPaymentDto(order)
+                Payment = order.Payment?.ToPaymentDto(order),
+                ShippingAddress = order.ShippingAddress
             };
         }
         private static PaymentDto ToPaymentDto(this Payment payment, Order order)

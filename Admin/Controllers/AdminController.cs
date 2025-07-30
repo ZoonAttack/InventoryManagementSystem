@@ -91,7 +91,7 @@ namespace Admin.Controllers
             
             var categories = await _apiCall.GetCategoriesAsync();
 
-            UpdateProductViewModel vm = new UpdateProductViewModel
+            CreateProductViewModel vm = new CreateProductViewModel
             {
                 ProductId = id,
                 Product = dto,
@@ -104,7 +104,7 @@ namespace Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateProduct(int id, CreateProductDto dto)
         {
-            var result = await _apiCall.UpdateProduct(dto, id);
+            var result = await _apiCall.UpdateOrderAsync(dto, id);
             if (!result.Success)
             {
                 ViewBag.ProductId = id;
@@ -115,13 +115,24 @@ namespace Admin.Controllers
             TempData["Message"] = "Product updated successfully";
             return RedirectToAction("Dashboard");
         }
-        [HttpGet]
-        public IActionResult CreateProduct() => View();
 
-        [HttpPost]
+        [HttpGet]
+        public IActionResult CreateProduct()
+        {
+            var categories = _apiCall.GetCategoriesAsync().Result.Data;
+            CreateProductViewModel vm = new CreateProductViewModel
+            {
+                Product = new CreateProductDto(),
+                Categories = categories!,
+                productStatuses = Enum.GetValues(typeof(ProductStatus)).Cast<ProductStatus>().ToList()
+            };
+            return View(vm);
+        }
+
+            [HttpPost]
         public async Task<IActionResult> CreateProduct(CreateProductDto dto)
         {
-            var result = await _apiCall.CreateProduct(dto);
+            var result = await _apiCall.CreateProductAsync(dto);
             if (!result.Success)
             {
                 ViewBag.Error = result.Message;
@@ -146,27 +157,27 @@ namespace Admin.Controllers
                 Status = result.Data.Status.ToString()
             };
 
-            UpdateOrderViewModel vm = new UpdateOrderViewModel
+            CreateOrderViewModel vm = new CreateOrderViewModel
             {
                 OrderId = id,
                 Order = dto,
                 OrderStatuses = Enum.GetValues(typeof(OrderStatus)).Cast<OrderStatus>().ToList()
             };
-            return View("UpdateProduct", vm);
+            return View("UpdateOrder", vm);
         }
 
         [HttpPost]
         public async Task<IActionResult> UpdateOrder(int id, CreateProductDto dto)
         {
-            var result = await _apiCall.UpdateProduct(dto, id);
+            var result = await _apiCall.UpdateOrderAsync(dto, id);
             if (!result.Success)
             {
-                ViewBag.ProductId = id;
+                ViewBag.OrderId = id;
                 ViewBag.Error = result.Message;
                 return View(dto);
             }
 
-            TempData["Message"] = "Product updated successfully";
+            TempData["Message"] = "Order updated successfully";
             return RedirectToAction("Dashboard");
         }
         [HttpPost]
@@ -185,12 +196,23 @@ namespace Admin.Controllers
         }
 
         [HttpGet]
-        public IActionResult CreateOrder() => View();
+        public IActionResult CreateOrder()
+        {
+            CreateOrderViewModel vm = new CreateOrderViewModel
+            {
+                Order = new CreateOrderDto(),
+                OrderStatuses = Enum.GetValues(typeof(OrderStatus)).Cast<OrderStatus>().ToList(),
+                Products = _apiCall.GetProductsAsync().Result.Data ?? new List<ProductSummaryDto>(),
+                PaymentMethods = Enum.GetValues(typeof(PaymentMethods)).Cast<PaymentMethods>().ToList()
+            };
+            
+            return View(vm);
+        }
 
         [HttpPost]
-        public async Task<IActionResult> CreateOrder(CreateOrderDto dto)
+        public async Task<IActionResult> CreateOrder(CreateOrderViewModel dto)
         {
-            var result = await _apiCall.CreateOrderAsync(dto);
+            var result = await _apiCall.CreateOrderAsync(dto.Order);
             if (!result.Success)
             {
                 ViewBag.Error = result.Message;

@@ -65,7 +65,7 @@ namespace ProductsManagement.Models
             }
         }
 
-        public async Task<ApiResponse<CategorySummaryDto>> CreateCategory(CategorySummaryDto dto)
+        public async Task<ApiResponse<CategorySummaryDto>> CreateCategoryAsync(CategorySummaryDto dto)
         {
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}api/category/create");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token); 
@@ -134,7 +134,7 @@ namespace ProductsManagement.Models
             }
         }
 
-        public async Task<ApiResponse<ProductDetailsDto>> CreateProduct(CreateProductDto dto)
+        public async Task<ApiResponse<ProductDetailsDto>> CreateProductAsync(CreateProductDto dto)
         {
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}api/product/create");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token);
@@ -159,7 +159,7 @@ namespace ProductsManagement.Models
             }
         }
 
-        public async Task<ApiResponse<ProductDetailsDto>> UpdateProduct(CreateProductDto dto, int productId)
+        public async Task<ApiResponse<ProductDetailsDto>> UpdateOrderAsync(CreateProductDto dto, int productId)
         {
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, $"{_baseUrl}api/product/update/{productId}");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token);
