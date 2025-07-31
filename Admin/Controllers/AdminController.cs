@@ -161,7 +161,9 @@ namespace Admin.Controllers
             {
                 OrderId = id,
                 Order = dto,
-                OrderStatuses = Enum.GetValues(typeof(OrderStatus)).Cast<OrderStatus>().ToList()
+                OrderStatuses = Enum.GetValues(typeof(OrderStatus)).Cast<OrderStatus>().ToList(),
+                PaymentMethods = Enum.GetValues(typeof(PaymentMethods)).Cast<PaymentMethods>().ToList(),
+                Products = _apiCall.GetProductsAsync().Result.Data ?? new List<ProductSummaryDto>()
             };
             return View("UpdateOrder", vm);
         }
@@ -225,9 +227,9 @@ namespace Admin.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> DeleteOrder(int OrderId)
+        public async Task<IActionResult> DeleteOrder(int id)
         {
-            var result = await _apiCall.DeleteOrderAsync(OrderId);
+            var result = await _apiCall.DeleteOrderAsync(id);
             if (result.Success)
             {
                 return RedirectToAction("Dashboard");

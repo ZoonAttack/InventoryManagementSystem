@@ -1,42 +1,137 @@
 ﻿@model CreateOrderViewModel
 
-@{
-    ViewData["Title"] = "Update Order";
-}
-
-<h2>Update Order</h2>
+<h2>Create Order</h2>
 
 <form asp-action="UpdateOrder" method="post">
-    <input type="hidden" asp-for="OrderId" />
+    <div class="form-group">
+        <label>Shipping Address</label>
+        <input asp-for="Order.ShippingAddress" class="form-control" />
+    </div>
 
     <div class="form-group">
-        <label for="Order_Status">Order Status</label>
-        <select asp-for="Order.PaymentMethod" name="Order.Status" class="form-control">
-            @foreach (var status in Model.OrderStatuses)
+        <label>Payment Method</label>
+        <select asp-for="Order.PaymentMethod" class="form-control">
+            <option disabled selected value="">-- Select a Payment Method --</option>
+            @foreach (var item in Model.PaymentMethods)
             {
-                <option value="@status" selected="@(Model.Order.PaymentMethod == status.ToString())">@status</option>
+                <option value="@item.ToString()">@item</option>
             }
         </select>
     </div>
 
     <div class="form-group">
-        <label asp-for="Order.ShippingAddress">Shipping Address</label>
-        <input asp-for="Order.ShippingAddress" class="form-control" />
-    </div>
-
-    @* Optional: Show OrderItems read-only *@
-    <div class="form-group">
-        <label>Items</label>
-        <ul class="list-group">
-            @foreach (var item in Model.Order.OrderItems)
+        <label>Status</label>
+        <select asp-for="Order.Status" class="form-control">
+            <option disabled selected value="">-- Select order status --</option>
+            @foreach (var item in Model.OrderStatuses)
             {
-                <li class="list-group-item">
-                    Product ID: @item.ProductId |
-                    Quantity: @item.Quantity
-                </li>
+                <option value="@item.ToString()">@item</option>
             }
-        </ul>
+        </select>
     </div>
 
-    <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
+    <h4>Order Items</h4>
+
+    <div id="order-items-container">
+        @for (int i = 0; i < (Model.Order.OrderItems?.Count ?? 0); i++)
+        {
+            <div class="card mb-3 p-3 border shadow-sm bg-light" data-index="@i">
+                <h5 class="card-title">Order Item @(i + 1)</h5>
+
+                <div class="form-group mb-2">
+                    <label asp-for="Order.OrderItems[i].ProductId">Product</label>
+                    <select class="form-control" asp-for="Order.OrderItems[i].ProductId" asp-items="@(new SelectList(Model.Products, "ProductId", "Name"))">
+                        <option disabled value="">-- Select a Product --</option>
+                    </select>
+                </div>
+
+                <div class="form-group mb-2">
+                    <label asp-for="Order.OrderItems[i].Quantity">Quantity</label>
+                    <input class="form-control" asp-for="Order.OrderItems[i].Quantity" />
+                </div>
+
+                <input type="hidden" asp-for="Order.OrderItems[i].ImageURL" />
+
+                <button type="button" class="btn btn-danger remove-item mt-2">Remove</button>
+            </div>
+        }
+    </div>
+
+    <button type="button" class="btn btn-secondary mb-3" onclick="addOrderItem()">Add Order Item</button>
+    <button type="submit" class="btn btn-success">Update Order</button>
 </form>
+
+@section Scripts {
+    <script>
+        let products = @Html.Raw(Json.Serialize(Model.Products));
+        let container = document.getElementById("order-items-container");
+        let index = container.children.length;
+
+        function addOrderItem() {
+            const card = document.createElement("div");
+            card.className = "card mb-3 p-3 border shadow-sm bg-light";
+            card.setAttribute("data-index", index);
+
+            const productOptions = products.map(p =>
+                `<option value="${p.productId}">${p.name}</option>`
+            ).join('');
+
+            card.innerHTML = `
+                <h5 class="card-title">Order Item ${index + 1}</h5>
+
+                <div class="form-group mb-2">
+                    <label for="Order_OrderItems_${index}__ProductId">Product</label>
+                    <select class="form-control" name="Order.OrderItems[${index}].ProductId" id="Order_OrderItems_${index}__ProductId">
+                        <option disabled selected value="">-- Select a Product --</option>
+                        ${productOptions}
+                    </select>
+                </div>
+
+                <div class="form-group mb-2">
+                    <label for="Order_OrderItems_${index}__Quantity">Quantity</label>
+                    <input class="form-control" type="number" name="Order.OrderItems[${index}].Quantity" id="Order_OrderItems_${index}__Quantity" />
+                </div>
+
+                <input type="hidden" name="Order.OrderItems[${index}].ImageUrl" id="Order_OrderItems_${index}__ImageUrl" />
+
+                <button type="button" class="btn btn-danger remove-item mt-2">Remove</button>
+            `;
+
+            container.appendChild(card);
+
+            card.querySelector('.remove-item').addEventListener('click', function () {
+                card.remove();
+                renumberItems();
+            });
+
+            index++;
+        }
+
+        function renumberItems() {
+            const cards = container.querySelectorAll(".card");
+            index = 0;
+            cards.forEach(card => {
+                card.setAttribute("data-index", index);
+                card.querySelector(".card-title").textContent = `Order Item ${index + 1}`;
+
+                const inputs = card.querySelectorAll("select, input");
+                inputs.forEach(input => {
+                    const nameMatch = input.name.match(/Order\.OrderItems\[\d+\]\.(\w+)/);
+                    if (!nameMatch) return;
+                    const field = nameMatch[1];
+                    input.name = `Order.OrderItems[${index}].${field}`;
+                    input.id = `Order_OrderItems_${index}__${field}`;
+                    if (input.labels?.length) {
+                        input.labels[0].setAttribute("for", input.id);
+                    }
+                });
+
+                index++;
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            if (index === 0) addOrderItem();
+        });
+    </script>
+}

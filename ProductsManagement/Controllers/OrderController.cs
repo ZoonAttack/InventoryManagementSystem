@@ -134,7 +134,14 @@ namespace ProductsManagement.Controllers
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> UpdateOrder(int id, [FromBody] CreateOrderDto dto)
         {
-            Order? order = await _dbContext.Orders.FindAsync(id);
+            Order? order = await _dbContext.Orders
+                .Include(x => x.User)
+                .Include(x => x.OrderItems)
+                .ThenInclude(x => x.Product)
+                .Include(x => x.Invoice)
+                .Include(x => x.Payment)
+                .Where(x => x.Id == id)
+                .FirstOrDefaultAsync();
             if (order == null)
             {
                 return NotFound($"Order with ID {id} not found.");

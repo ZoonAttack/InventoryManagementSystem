@@ -1,23 +1,22 @@
 ﻿@model CreateOrderViewModel
 
 <h2>Create Order</h2>
+
 <form asp-action="CreateOrder" method="post">
     <div class="form-group">
         <label>Shipping Address</label>
         <input asp-for="@Model.Order.ShippingAddress" class="form-control" />
     </div>
+
     <div class="form-group">
         <label>Payment Method</label>
         <select asp-for="@Model.Order.PaymentMethod" class="form-control">
-        <option disabled selected value="">-- Select a Payment Method --</option>
-        @foreach (var item in Model.PaymentMethods)
-        {
-            <option value="@item">
-                @item.ToString()
-            </option>
-        }
+            <option disabled selected value="">-- Select a Payment Method --</option>
+            @foreach (var item in Model.PaymentMethods)
+            {
+                <option value="@item">@item.ToString()</option>
+            }
         </select>
-
     </div>
 
     <div class="form-group">
@@ -26,101 +25,127 @@
             <option disabled selected value="">-- Select order status --</option>
             @foreach (var item in Model.OrderStatuses)
             {
-                <option value="@item">
-                    @item.ToString()
-                </option>
+                <option value="@item">@item.ToString()</option>
             }
         </select>
-
     </div>
 
     <h4>Order Items</h4>
+
+    <!-- Hidden master select used for cloning -->
+    <select id="product-select-master" class="d-none">
+        <option disabled selected value="">-- Select a Product --</option>
+        @foreach (var p in Model.Products)
+        {
+            <option value="@p.ProductId" data-imageurl="@p.ImageUrl">@p.Name</option>
+        }
+    </select>
+
     <div id="order-items-container"></div>
 
-    <button type="button" class="btn btn-secondary mb-3" onclick="addOrderItem()">Add Order Item</button>
+    <button type="button" id="add-item-btn" class="btn btn-secondary mb-3">Add Order Item</button>
 
     <button type="submit" class="btn btn-success">Place Order</button>
 </form>
-
 
 @section Scripts {
     <script>
         let index = 0;
 
         function addOrderItem() {
-            const container = document.getElementById('order-items-container');
+            const container = document.getElementById("order-items-container");
 
-            const card = document.createElement('div');
+            const card = document.createElement("div");
             card.className = "card mb-3 p-3 border shadow-sm bg-light";
             card.setAttribute("data-index", index);
 
-            const productOptions = @Html.Raw(Json.Serialize(Model.Products))
-                .map(p => `<option value="${p.ProductId}">${p.Name}</option>`).join('');
+            // Clone the hidden master product select
+            const productSelect = document.getElementById("product-select-master").cloneNode(true);
+            productSelect.classList.remove("d-none");
+            productSelect.classList.add("form-control");
+            productSelect.name = `Order.OrderItems[${index}].ProductId`;
+            productSelect.id = `Order_OrderItems_${index}__ProductId`;
 
-            card.innerHTML = `
-                <h5 class="card-title">Order Item ${index + 1}</h5>
+            // Quantity input
+            const quantityInput = document.createElement("input");
+            quantityInput.type = "number";
+            quantityInput.className = "form-control";
+            quantityInput.name = `Order.OrderItems[${index}].Quantity`;
+            quantityInput.id = `Order_OrderItems_${index}__Quantity`;
 
-                <div class="form-group mb-2">
-                    <label for="Order_OrderItems_${index}__ProductId">Product</label>
-                    <select class="form-control"
-                            name="Order.OrderItems[${index}].ProductId"
-                            id="Order_OrderItems_${index}__ProductId">
-                        <option disabled selected value="">-- Select a Product --</option>
-                        ${productOptions}
-                    </select>
-                </div>
+            // Hidden ImageUrl input
+            const imageInput = document.createElement("input");
+            imageInput.type = "hidden";
+            imageInput.name = `Order.OrderItems[${index}].ImageUrl`;
+            imageInput.id = `Order_OrderItems_${index}__ImageUrl`;
 
-                <div class="form-group mb-2">
-                    <label for="Order_OrderItems_${index}__Quantity">Quantity</label>
-                    <input class="form-control"
-                           type="number"
-                           name="Order.OrderItems[${index}].Quantity"
-                           id="Order_OrderItems_${index}__Quantity" />
-                </div>
-
-                <input type="hidden"
-                       name="Order.OrderItems[${index}].ImageURL"
-                       id="Order_OrderItems_${index}__ImageURL" />
-
-                <button type="button" class="btn btn-danger remove-item mt-2">Remove</button>
-            `;
-
-            container.appendChild(card);
+            // When product changes, update the hidden image URL
+            productSelect.addEventListener("change", function () {
+                const selected = this.selectedOptions[0];
+                imageInput.value = selected?.dataset.imageurl ?? "";
+            });
 
             // Remove button
-            card.querySelector('.remove-item').addEventListener('click', function () {
+            const removeBtn = document.createElement("button");
+            removeBtn.type = "button";
+            removeBtn.className = "btn btn-danger mt-2";
+            removeBtn.innerHTML = "Remove";
+            removeBtn.addEventListener("click", function () {
                 card.remove();
                 renumberItems();
             });
 
+            card.innerHTML = `<h5 class="card-title">Order Item ${index + 1}</h5>`;
+
+            const productGroup = document.createElement("div");
+            productGroup.className = "form-group mb-2";
+            const productLabel = document.createElement("label");
+            productLabel.htmlFor = productSelect.id;
+            productLabel.textContent = "Product";
+            productGroup.appendChild(productLabel);
+            productGroup.appendChild(productSelect);
+
+            const quantityGroup = document.createElement("div");
+            quantityGroup.className = "form-group mb-2";
+            const quantityLabel = document.createElement("label");
+            quantityLabel.htmlFor = quantityInput.id;
+            quantityLabel.textContent = "Quantity";
+            quantityGroup.appendChild(quantityLabel);
+            quantityGroup.appendChild(quantityInput);
+
+            card.appendChild(productGroup);
+            card.appendChild(quantityGroup);
+            card.appendChild(imageInput);
+            card.appendChild(removeBtn);
+
+            container.appendChild(card);
             index++;
         }
 
         function renumberItems() {
-            const cards = document.querySelectorAll('#order-items-container .card');
+            const cards = document.querySelectorAll("#order-items-container .card");
             index = 0;
-
             cards.forEach(card => {
                 card.setAttribute("data-index", index);
-                card.querySelector('.card-title').textContent = `Order Item ${index + 1}`;
-
-                const inputs = card.querySelectorAll('select, input');
+                card.querySelector(".card-title").textContent = `Order Item ${index + 1}`;
+                const inputs = card.querySelectorAll("select, input");
                 inputs.forEach(input => {
-                    const nameMatch = input.name.match(/Order\.OrderItems\[\d+\]\.(\w+)/);
-                    if (!nameMatch) return;
-                    const field = nameMatch[1];
+                    const match = input.name.match(/Order\.OrderItems\[\d+\]\.(\w+)/);
+                    if (!match) return;
+                    const field = match[1];
                     input.name = `Order.OrderItems[${index}].${field}`;
                     input.id = `Order_OrderItems_${index}__${field}`;
                     if (input.labels && input.labels.length > 0) {
-                        input.labels[0].setAttribute('for', input.id);
+                        input.labels[0].setAttribute("for", input.id);
                     }
                 });
-
                 index++;
             });
         }
 
-        window.onload = () => addOrderItem(); // Add one by default
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("add-item-btn").addEventListener("click", addOrderItem);
+            addOrderItem(); // one by default
+        });
     </script>
 }
-

@@ -271,9 +271,9 @@ namespace ProductsManagement.Models
             }
         }
 
-        public async Task<ApiResponse<OrderSummaryDto>> UpdateOrderAsync(CreateOrderDto dto, int orderId)
+        public async Task<ApiResponse<OrderSummaryDto>> UpdateOrderAsync(CreateOrderDto dto, int id)
         {
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, $"{_baseUrl}api/order/update/{orderId}");
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, $"{_baseUrl}api/order/update/{id}");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token);
             request.Content = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
 
@@ -294,9 +294,9 @@ namespace ProductsManagement.Models
             }
         }
 
-        public async Task<ApiResponse<string>> DeleteOrderAsync(int orderId)
+        public async Task<ApiResponse<string>> DeleteOrderAsync(int id)
         {
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, $"{_baseUrl}api/order/destroy/{orderId}");
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, $"{_baseUrl}api/order/destroy/{id}");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token);
             var response = await _httpClient.SendAsync(request);
             if (!response.IsSuccessStatusCode)
