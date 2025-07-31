@@ -80,6 +80,8 @@ namespace ProductsManagement.Controllers
                         return BadRequest($"Product with ID {item.ProductId} not found.");
                     }
                     totalAmount += product.Price * item.Quantity;
+                    item.ProductId = product.Id;
+                    item.ImageURL = product.ImageUrl;
                 }
                 //2- create the order
                 string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -119,7 +121,7 @@ namespace ProductsManagement.Controllers
                 _dbContext.Invoices.Add(invoice);
                 //5 - save order, payment, and invoice in database
                 await _dbContext.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order.ToOrderSummaryDto());
+                return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order.ToOrderDetailsDto());
             }
             catch (Exception ex)
             {
@@ -130,14 +132,23 @@ namespace ProductsManagement.Controllers
 
         [HttpPut("update/{id}")]
         [Authorize(Policy = "AdminOnly")]
-        public async Task<IActionResult> UpdateOrderStatus(int id, string status)
+        public async Task<IActionResult> UpdateOrder(int id, [FromBody] CreateOrderDto dto)
         {
-            Order? order = await _dbContext.Orders.FindAsync(id);
+            Order? order = await _dbContext.Orders
+                .Include(x => x.User)
+                .Include(x => x.OrderItems)
+                .ThenInclude(x => x.Product)
+                .Include(x => x.Invoice)
+                .Include(x => x.Payment)
+                .Where(x => x.Id == id)
+                .FirstOrDefaultAsync();
             if (order == null)
             {
                 return NotFound($"Order with ID {id} not found.");
             }
-            order.Status = (OrderStatus)Enum.Parse(typeof(OrderStatus), status);
+            order.Status = (OrderStatus)Enum.Parse(typeof(OrderStatus), dto.Status);
+            order.ShippingAddress = dto.ShippingAddress;
+            order.Payment.Method = (PaymentMethods)Enum.Parse(typeof(PaymentMethods),dto.PaymentMethod);
             _dbContext.Orders.Update(order);
             await _dbContext.SaveChangesAsync();
             return Ok(order.ToOrderSummaryDto());

@@ -1,4 +1,4 @@
-﻿@model UpdateProductViewModel
+﻿@model CreateProductViewModel
 
 @{
     ViewData["Title"] = "Update Product";
@@ -10,23 +10,23 @@
     <input type="hidden" asp-for="@Model.ProductId" />
 
     <div class="form-group">
-        <label asp-for="Product.Name"></label>
-        <input asp-for="Product.Name" class="form-control" />
+        <label asp-for="@Model.Product.Name"></label>
+        <input asp-for="@Model.Product.Name" class="form-control" />
     </div>
 
     <div class="form-group">
-        <label asp-for="Product.Description"></label>
-        <textarea asp-for="Product.Description" class="form-control"></textarea>
+        <label asp-for="@Model.Product.Description"></label>
+        <textarea asp-for="@Model.Product.Description" class="form-control"></textarea>
     </div>
 
     <div class="form-group">
-        <label asp-for="Product.Price"></label>
-        <input asp-for="Product.Price" class="form-control" />
+        <label asp-for="@Model.Product.Price"></label>
+        <input asp-for="@Model.Product.Price" class="form-control" />
     </div>
 
     <div class="form-group">
-        <label asp-for="Product.Status">Status</label>
-        <select asp-for="Product.Status" class="form-control">
+        <label asp-for="@Model.Product.Status">Status</label>
+        <select asp-for="@Model.Product.Status" class="form-control">
             @foreach (var status in Model.productStatuses)
             {
                 <option value="@status">@status</option>
@@ -35,8 +35,8 @@
     </div>
 
     <div class="form-group">
-        <label asp-for="Product.CategoryId">Category</label>
-        <select asp-for="Product.CategoryId" class="form-control">
+        <label asp-for="@Model.Product.CategoryId">Category</label>
+        <select asp-for="@Model.Product.CategoryId" class="form-control">
             @foreach (var category in Model.Categories)
             {
                 <option value="@category.CategoryId">@category.Name</option>
@@ -45,8 +45,8 @@
     </div>
 
     <div class="form-group">
-        <label asp-for="Product.ImageUrl"></label>
-        <input asp-for="Product.ImageUrl" class="form-control" />
+        <label asp-for="@Model.Product.ImageUrl"></label>
+        <input asp-for="@Model.Product.ImageUrl" class="form-control" />
     </div>
 
     <button type="submit" class="btn btn-primary">Update</button>

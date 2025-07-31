@@ -1,38 +1,39 @@
 ﻿@using Shared.DTOs
 @model OrderDetailsDto
 
-<div class="order-details-popup">
-    <h2>Order #@Model.OrderId</h2>
+<div class="order-details-popup" style="background-color: #1f1f1f; color: #f8b6c1; padding: 20px; border-radius: 12px; max-width: 600px;">
+    <h2 style="color: #ff69b4;">Order #@Model.OrderId</h2>
+
     <p><strong>Status:</strong> @Model.Status</p>
     <p><strong>Ordered For:</strong> @Model.OrderFor</p>
     <p><strong>Created At:</strong> @Model.CreatedAt.ToString("g")</p>
     <p><strong>Total Amount:</strong> $@Model.TotalAmount</p>
 
-    <h4>Items:</h4>
-    <ul>
+    <h4 style="color: #ff69b4; margin-top: 20px;">Items:</h4>
+    <ul style="list-style: none; padding-left: 0;">
         @foreach (var item in Model.OrderItems)
         {
-            <li>
-                <img src="@item.ImageURL" alt="Product" style="width: 50px;" />
-                Qty: @item.Quantity
+            <li style="margin-bottom: 10px; background: #2a2a2a; padding: 10px; border-radius: 8px;">
+                <img src="@item.ImageURL" alt="Product" style="width: 50px; border-radius: 6px; margin-right: 10px;" />
+                <span><strong>Qty:</strong> @item.Quantity</span>
             </li>
         }
     </ul>
 
-    <h4>Payment:</h4>
-    <p>Method: @Model.Payment?.PaymentMethod</p>
-    <p>Date: @Model.Payment?.PaidAt</p>
+    <h4 style="color: #ff69b4; margin-top: 20px;">Payment:</h4>
+    <p><strong>Method:</strong> @Model.Payment?.PaymentMethod</p>
+    <p><strong>Date:</strong> @Model.Payment?.PaidAt.ToString("g")</p>
 
-    <h4>Invoice:</h4>
-    <p>Invoice Number: @Model.Invoice?.InvoiceNumber</p>
+    <h4 style="color: #ff69b4; margin-top: 20px;">Invoice:</h4>
+    <p><strong>Invoice Number:</strong> @Model.Invoice?.InvoiceNumber</p>
 
-    <div class="actions">
-        <form method="get" asp-action="UpdateOrder" asp-route-id="@Model.OrderId" style="display:inline">
-            <button type="submit" class="btn btn-danger">Delete Order</button>
+    <div class="actions mt-4" style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <form method="get" asp-action="UpdateOrder" asp-route-id="@Model.OrderId" style="display:inline;">
+            <button type="submit" class="pink-button">Update Order</button>
         </form>
-        <form method="post" asp-action="DeleteOrder" asp-route-id="@Model.OrderId" style="display:inline">
+
+        <form method="post" asp-action="DeleteOrder" asp-route-id="@Model.OrderId" style="display:inline;">
             <button type="submit" class="btn btn-danger">Delete Order</button>
         </form>
     </div>
 </div>
-

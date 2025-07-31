@@ -1,0 +1,131 @@
+﻿/*﻿@import url('login.css');*/
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: black;
+    background-image: url('../imags/background.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 100vh;
+    color: #fff;
+}
+
+.navbar {
+    background-color: #1f1f1f;
+    color: #fff;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.app-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.language-toggle .dropbtn {
+    background-color: transparent;
+    border: none;
+    color: #f8b6c1;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.language-toggle .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #333;
+    right: 2rem;
+    top: 60px;
+    min-width: 120px;
+    box-shadow: 0px 8px 16px rgba(0,0,0,0.3);
+    z-index: 10;
+}
+
+.language-toggle .dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.language-toggle .dropdown-content a {
+    color: #f8b6c1;
+    padding: 10px 15px;
+    text-decoration: none;
+    display: block;
+}
+
+    .language-toggle .dropdown-content a:hover {
+        background-color: #444;
+    }
+
+.login-container {
+    height: calc(100vh - 80px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-form {
+    background: rgba(255, 255, 255, 0.10);
+    /*    backdrop-filter: blur(4px); */
+    /*    -webkit-backdrop-filter: blur(4px); */
+    padding: 2rem;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    font-weight: 800;
+    color: #fff;
+}
+
+
+    .login-form h2 {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        color: #f8b6c1;
+    }
+
+.input-group {
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+    .input-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #f8b6c1;
+    }
+
+    .input-group input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #666;
+        border-radius: 5px;
+        background-color: #444;
+        color: #fff;
+    }
+
+#login-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #ff69b4;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+    #login-button:hover {
+        background-color: #ff1493;
+    }
+
+.error-message {
+    text-align: center;
+    margin-top: 1rem;
+    color: #ffb3b3;
+}
