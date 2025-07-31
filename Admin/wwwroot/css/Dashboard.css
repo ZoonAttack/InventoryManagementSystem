@@ -1,170 +1,110 @@
-﻿﻿body {
+﻿body {
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #fff;
-    color: #f8b6c1;
+    background-color: white;
+    color: black;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-/* ==== NAVBAR ==== */
+/* النافبار */
 .navbar {
-    background-color: #1f1f1f; /* رمادي داكن */
-    color: #fff;
+    background-color: black;
+    color: white;
     padding: 1rem 2rem;
     display: flex;
-    justify-content: space-between;
+    align-items: center;
+    justify-content: space-between; 
+}
+
+.navbar {
+    display: flex;
+    align-items: center; 
+    justify-content: space-between; 
+    padding: 1rem 2rem;
+    background-color: black;
+    color: white;
+}
+
+.navbar-brand,
+.center-buttons,
+.right-button {
+    flex: 1;
+    display: flex; 
     align-items: center;
 }
 
 .navbar-brand {
-    font-size: 1.5rem;
-    font-weight: bold;
-   
+    justify-content: flex-start; 
 }
 
-/* ==== CENTER BUTTONS ==== */
-.navbar .button-row {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    align-items: center;
-    flex: 1;
+.center-buttons {
+    justify-content: center; 
+    gap: 15px; 
 }
 
-/* ==== Logout Button ==== */
-.logout-container {
-    display: flex;
-    align-items: center;
+.right-button {
     justify-content: flex-end;
 }
 
-#logout-button {
-    padding: 8px 16px;
-    background-color: #ff69b4;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-    #logout-button:hover {
-        background-color: #ff1493;
-    }
-
-/* ==== Buttons in navbar ==== */
-.pink-button {
-    padding: 10px 20px;
-    background-color: #ff69b4;
-    border: none;
-    border-radius: 6px;
-    color: white;
+.app-name {
+    font-size: 1.5rem;
     font-weight: bold;
-    cursor: pointer;
-    transition: background 0.3s ease;
+    color: white;
 }
 
-    .pink-button:hover {
-        background-color: #ff1493;
-    }
-
-/* ==== MAIN ==== */
-.dashboard-main {
+.container {
+    flex: 1; 
     padding: 2rem;
 }
-
-/* ==== PRODUCTS GRID ==== */
-.products-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
+.row {
+    margin-top: 20px;
 }
 
-.btn-details {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 8px 16px;
-    background-color: #ff69b4;
-    color: #fff;
-    border-radius: 5px;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-    .btn-details:hover {
-        background-color: #ff1493;
-    }
-
-/* ==== SECTION TITLE ==== */
-.section-title {
-    color: #1f1f1f;
-    font-size: 1.8rem;
-    margin-top: 2rem;
-    border-bottom: 2px solid #f8b6c1;
-    padding-bottom: 0.5rem;
-    width: fit-content;
-}
-
-.products-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-    padding: 20px;
-    background-color: #f9f9f9; /* خلفية خفيفة للصفحة */
-}
-
-/* === بطاقة موحدة للمنتجات والطلبات === */
+/* الكروت */
 .card {
-    background-color: #1f1f1f; /* رمادي غامق مثل النافبار */
-    color: #f8b6c1; /* نص وردي فاتح */
-    border-radius: 12px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease;
-    cursor: pointer;
+    border: 1px solid #000;
+    background-color: white;
+    color: black;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
     .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(255, 105, 180, 0.4); /* ظل وردي */
+        transform: scale(1.02);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
-/* === محتوى الكرت === */
-.card-body {
-    padding: 1.2rem;
-}
-
-    .card-body h5 {
-        font-size: 1.25rem;
-        font-weight: bold;
-        color: #ff69b4; /* وردي متوسط */
-        margin-bottom: 0.75rem;
-    }
-
-    .card-body p {
-        margin-bottom: 0.5rem;
-        font-size: 0.95rem;
-        color: #fff;
-    }
-.row > .col {
-    display: flex;
-    justify-content: center;
-}
-
-
-.btn-details {
-    display: inline-block;
-    margin-top: 15px;
-    padding: 8px 15px;
-    background-color: #f8b6c1; /* خلفية وردي */
-    color: #3a3a3a; /* نص رمادي غامق */
-    border-radius: 5px;
-    text-decoration: none;
+.card-title {
     font-weight: bold;
-    text-align: center;
-    transition: background-color 0.3s ease;
 }
 
-    .btn-details:hover {
-        background-color: #ff69b4; /* وردي أفتح عند المرور */
-        color: #fff;
+
+
+.button-row {
+    display: flex;
+    justify-content: left;
+    gap: 15px; 
+    flex-wrap: wrap; 
+}
+
+.pink-button {
+    background-color: black;
+    color: white;
+    border: 2px solid transparent;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.2s ease;
+}
+
+    .pink-button:hover {
+        background-color: white;
+        color: black;
+        border: 2px solid white;
     }

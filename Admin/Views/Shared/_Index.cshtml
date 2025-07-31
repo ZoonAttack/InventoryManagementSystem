@@ -1,0 +1,28 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Admin</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="navbar-left">
+            <h1><a asp-action="Dashboard" asp-controller="Admin" class="brand-link">Products Management System</a></h1>
+        </div>
+        <div class="navbar-center">
+            @* <a asp-action="CreateProduct" asp-controller="Admin">Movies</a> *@
+        </div>
+        <div class="navbar-right">
+            <a asp-action="Login" asp-controller="Admin">Logout</a>
+        </div>
+    </nav>
+    <div class="container">
+        @RenderBody()  
+    </div>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

@@ -1,9 +1,19 @@
 ﻿@model CreateProductViewModel
 
 @{
+    Layout = "~/Views/Shared/_Index.cshtml";
     ViewData["Title"] = "Create Product";
 }
 
+<link rel="stylesheet" href="~/css/Style.css" />
+
+@* <nav class="navbar"> *@
+@*     <div class="navbar-brand"> *@
+@*         <span class="app-name" id="app-name">Products Management System</span> *@
+
+@*     </div> *@
+@* </nav> *@
+    
 <h2>Create Product</h2>
 
 <form asp-action="CreateProduct" method="post">

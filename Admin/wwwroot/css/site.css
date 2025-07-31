@@ -1,22 +1,83 @@
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
 body {
-  margin-bottom: 60px;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: white;
+    color: black;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ‘—Ìÿ «· ‰ﬁ· */
+.navbar {
+    background-color: black;
+    color: white;
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* «·ﬁ”„ «·√Ì”— - ⁄‰Ê«‰ «·‰Ÿ«„ */
+.navbar-left h1 {
+    margin: 0;
+}
+
+.brand-link {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+    .brand-link:hover {
+        text-decoration: underline;
+    }
+
+/* «·ﬁ”„ «·√Ê”ÿ Ê«·Ì„Ì‰ -  ‰”Ìﬁ «·—Ê«»ÿ ﬂ√“—«— */
+.navbar-center a,
+.navbar-right a {
+    background-color: white;
+    color: black;
+    padding: 8px 16px;
+    margin-left: 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+    .navbar-center a:first-child,
+    .navbar-right a:first-child {
+        margin-left: 0;
+    }
+
+    /*  √ÀÌ— «· ÕÊÌ„ */
+    .navbar-center a:hover,
+    .navbar-right a:hover {
+        background-color: black;
+        color: white;
+    }
+
+/*  — Ì» «·√ﬁ”«„ «·À·«À… */
+.navbar-left,
+.navbar-center,
+.navbar-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+/* „Õ«–«… «·„Õ ÊÏ œ«Œ· «·√ﬁ”«„ */
+.navbar-left {
+    justify-content: flex-start;
+}
+
+.navbar-center {
+    justify-content: center;
+}
+
+.navbar-right {
+    justify-content: flex-end;
 }

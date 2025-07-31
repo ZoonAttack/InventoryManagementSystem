@@ -1,5 +1,11 @@
 ﻿@model CreateOrderViewModel
 
+@{
+    Layout = "~/Views/Shared/_Index.cshtml";
+
+    ViewData["Title"] = "Create Order";
+}
+<link rel="stylesheet" href="~/css/Style.css" />
 <h2>Create Order</h2>
 
 <form asp-action="CreateOrder" method="post">
@@ -30,22 +36,35 @@
         </select>
     </div>
 
-    <h4>Order Items</h4>
+    @* <h4>Order Items</h4> *@
 
-    <!-- Hidden master select used for cloning -->
-    <select id="product-select-master" class="d-none">
-        <option disabled selected value="">-- Select a Product --</option>
-        @foreach (var p in Model.Products)
-        {
-            <option value="@p.ProductId" data-imageurl="@p.ImageUrl">@p.Name</option>
-        }
-    </select>
+    @* <!-- Hidden master select used for cloning --> *@
+    @* <select id="product-select-master" class="d-none"> *@
+    @*     <option disabled selected value="">-- Select a Product --</option> *@
+    @*     @foreach (var p in Model.Products) *@
+    @*     { *@
+    @*         <option value="@p.ProductId" data-imageurl="@p.ImageUrl">@p.Name</option> *@
+    @*     } *@
+    @* </select> *@
+    <div class="form-group">
+        <label>Order Items</label>
+        <!-- Hidden master select used for cloning -->
+        <select id="product-select-master" class="form-control d-none">
+            <option disabled selected value="">-- Select a Product --</option>
+            @foreach (var p in Model.Products)
+            {
+                <option value="@p.ProductId" data-imageurl="@p.ImageUrl">@p.Name</option>
+            }
+        </select>
+    </div>
 
     <div id="order-items-container"></div>
 
-    <button type="button" id="add-item-btn" class="btn btn-secondary mb-3">Add Order Item</button>
+    <div class="order-buttons-row">
+        <button type="button" id="add-item-btn" class="btn btn-success">Add Order Item</button>
+        <button type="submit" class="btn btn-success">Place Order</button>
+    </div>
 
-    <button type="submit" class="btn btn-success">Place Order</button>
 </form>
 
 @section Scripts {
