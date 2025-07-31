@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Options;
 using ProductsManagement.Models;
 
 namespace Admin
@@ -14,9 +15,10 @@ namespace Admin
 
             builder.Services.AddSession();
             builder.Services.AddHttpContextAccessor();
+            builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
             var app = builder.Build();
-
+          
             app.UseSession();
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
