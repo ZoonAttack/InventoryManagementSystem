@@ -61,7 +61,7 @@ namespace ProductsManagement.Controllers
 
         [HttpPost("create")]
         [Authorize(Policy = "AdminOnly")]
-        public async Task<IActionResult> CreateCategory([FromBody] CategorySummaryDto categoryDto)
+        public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryDto categoryDto)
         {
             if (categoryDto == null || string.IsNullOrEmpty(categoryDto.Name))
             {
@@ -74,7 +74,7 @@ namespace ProductsManagement.Controllers
             };
             _dbContext.Categories.Add(category);
             await _dbContext.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetCategories), new { id = category.Id }, category);
+            return CreatedAtAction(nameof(GetCategory), new { name = category.Name }, category);
         }
     }
 }

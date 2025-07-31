@@ -7,7 +7,7 @@ using Shared.Utility;
 using ProductsManagement.DTOs.Mappers;
 using Shared.DTOs;
 using System.Security.Claims;
-
+using QuestPDF.Fluent;
 namespace ProductsManagement.Controllers
 {
     [ApiController]
@@ -40,7 +40,7 @@ namespace ProductsManagement.Controllers
                 .Where(x => x.UserId == userId)
                 .Select(x => x.ToOrderSummaryDto())
                 .ToListAsync();
-            if(orders.Count <= 0)
+            if (orders.Count <= 0)
                 return NotFound("No orders found for the current user.");
 
             return Ok(orders);
@@ -58,7 +58,7 @@ namespace ProductsManagement.Controllers
                 .Where(x => x.Id == id)
                 .Select(x => x.ToOrderDetailsDto())
                 .FirstOrDefaultAsync();
-            if(order == null)
+            if (order == null)
             {
                 return NotFound($"Order with ID {id} not found.");
             }
@@ -148,7 +148,7 @@ namespace ProductsManagement.Controllers
             }
             order.Status = (OrderStatus)Enum.Parse(typeof(OrderStatus), dto.Status);
             order.ShippingAddress = dto.ShippingAddress;
-            order.Payment.Method = (PaymentMethods)Enum.Parse(typeof(PaymentMethods),dto.PaymentMethod);
+            order.Payment.Method = (PaymentMethods)Enum.Parse(typeof(PaymentMethods), dto.PaymentMethod);
             _dbContext.Orders.Update(order);
             await _dbContext.SaveChangesAsync();
             return Ok(order.ToOrderSummaryDto());
@@ -168,6 +168,56 @@ namespace ProductsManagement.Controllers
 
             await _dbContext.SaveChangesAsync();
             return NoContent();
+        }
+
+
+
+        [HttpGet("invoice/{orderId}")]
+        public async Task<IActionResult> DownloadInvoice(int orderId)
+        {
+            var order = await _dbContext.Orders
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                .FirstOrDefaultAsync(o => o.Id == orderId);
+
+            if (order == null)
+                return NotFound("Order not found.");
+
+            var user = await _dbContext.Users.FindAsync(order.UserId);
+            if (user == null)
+                return NotFound("User not found.");
+
+            var printableItems = order.OrderItems
+                .Where(item => item.Product != null)
+                .Select(item => new PrintableOrderItem
+                {
+                    ProductName = item.Product.Name,
+                    Quantity = item.Quantity,
+                    UnitPrice = item.Product.Price
+                })
+                .ToList();
+
+            var document = new PDFGenerator(
+                customerName: user.UserName,
+                orderId: order.Id.ToString(),
+                orderItems: printableItems,
+                shippingAddress: order.ShippingAddress
+            );
+
+            var stream = new MemoryStream();
+            document.GeneratePdf(stream);
+            stream.Position = 0;
+
+            // Save to /Invoices
+            string invoicesDir = Path.Combine(Directory.GetCurrentDirectory(), "Invoices");
+            if (!Directory.Exists(invoicesDir))
+                Directory.CreateDirectory(invoicesDir);
+
+            string filePath = Path.Combine(invoicesDir, $"Invoice_{orderId}.pdf");
+            await System.IO.File.WriteAllBytesAsync(filePath, stream.ToArray());
+
+            stream.Position = 0; // Reset again for return
+            return File(stream, "application/pdf", $"Invoice_{orderId}.pdf");
         }
     }
 }

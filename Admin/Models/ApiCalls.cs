@@ -65,7 +65,7 @@ namespace ProductsManagement.Models
             }
         }
 
-        public async Task<ApiResponse<CategorySummaryDto>> CreateCategoryAsync(CategorySummaryDto dto)
+        public async Task<ApiResponse<CreateCategoryDto>> CreateCategoryAsync(CreateCategoryDto dto)
         {
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}api/category/create");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token); 
@@ -77,16 +77,16 @@ namespace ProductsManagement.Models
 
             if (response.StatusCode == HttpStatusCode.Created)
             {
-                var data = JsonSerializer.Deserialize<CategorySummaryDto>(json, new JsonSerializerOptions
+                var data = JsonSerializer.Deserialize<CreateCategoryDto>(json, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
                 });
 
-                return ApiResponse<CategorySummaryDto>.Ok(data!, "Category created successfully.", statusCode);
+                return ApiResponse<CreateCategoryDto>.Ok(data!, "Category created successfully.", statusCode);
             }
             else
             {
-                return ApiResponse<CategorySummaryDto>.Fail($"Failed to create category. Server returned: {json}", statusCode);
+                return ApiResponse<CreateCategoryDto>.Fail($"Failed to create category. Server returned: {json}", statusCode);
             }
         }
 
