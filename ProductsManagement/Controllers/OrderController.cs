@@ -105,7 +105,7 @@ namespace ProductsManagement.Controllers
                 //3- create the payment(cash does not need api)
                 Payment payment = new()
                 {
-                    Method = PaymentMethods.COD,
+                    Method = (PaymentMethods)Enum.Parse(typeof(PaymentMethods), dto.PaymentMethod),
                     Amount = totalAmount,
                     PaidAt = DateTime.UtcNow,
                     Order = order

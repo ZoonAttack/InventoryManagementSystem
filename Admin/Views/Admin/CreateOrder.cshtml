@@ -19,17 +19,6 @@
         </select>
     </div>
 
-    <div class="form-group">
-        <label>Status</label>
-        <select asp-for="@Model.Order.Status" class="form-control">
-            <option disabled selected value="">-- Select order status --</option>
-            @foreach (var item in Model.OrderStatuses)
-            {
-                <option value="@item">@item.ToString()</option>
-            }
-        </select>
-    </div>
-
     <h4>Order Items</h4>
 
     <!-- Hidden master select used for cloning -->
