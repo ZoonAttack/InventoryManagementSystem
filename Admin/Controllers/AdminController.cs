@@ -261,5 +261,19 @@ namespace Admin.Controllers
 
             return BadRequest("Unknown type.");
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> DownloadInvoice(int id)
+        {
+            var result = await _apiCall.GetInvoiceAsync(id);
+            if(!result.Success || result.Data == null)
+            {
+                TempData["Error"] = result.Message ?? "Failed to retrieve invoice.";
+                return RedirectToAction("Dashboard");
+            }
+            var file = result.Data;
+            return File(file.Content, file.ContentType, file.FileName);
+        }
     }
 }

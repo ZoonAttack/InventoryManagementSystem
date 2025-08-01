@@ -7,59 +7,64 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link rel="stylesheet" href="~/css/Dashboard.css" />
 <body>
-    <nav class="navbar">
-        <div class="navbar-brand">
-            <span class="app-name" id="app-name" style="color:#ff1493">My Dashboard</span>
+    <div class="sidebar">
+        <h2>My Dashboard</h2>
+
+        <div class="section">
+            <p>Welcome, Admin</p>
         </div>
 
-        <div class="button-row">
-            <form method="get" asp-action="CreateProduct" asp-controller="Admin" style="display:inline;">
+        <div class="section">
+            <form method="get" asp-action="CreateProduct" asp-controller="Admin">
                 <button type="submit" class="pink-button">Create Product</button>
             </form>
-
-            <form method="get" asp-action="CreateOrder" asp-controller="Admin" style="display:inline;">
+            <form method="get" asp-action="CreateOrder" asp-controller="Admin">
                 <button type="submit" class="pink-button">Create Order</button>
+            </form>
+            <form method="get" asp-action="CreateCategory" asp-controller="Admin">
+                <button type="submit" class="pink-button">Create Category</button>
             </form>
         </div>
 
-        <div>
-            <form method="post" asp-action="Logout" asp-controller="Admin" style="display:inline;">
+        <div class="section">
+            <form method="post" asp-action="Logout" asp-controller="Admin">
                 <button type="submit" class="pink-button">Logout</button>
             </form>
         </div>
-    </nav>
-<div class="container my-4">
-    <h2 class="mb-4">Products</h2>
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        @foreach (var product in Model.Products)
-        {
-            <div class="col">
-                <div class="card h-100 product-card" data-id="@product.ProductId" data-type="product">
-                    <div class="card-body">
-                        <h5 class="card-title">@product.Name</h5>
-                        <p class="card-text">Price: $@product.Price</p>
-                    </div>
-                </div>
-            </div>
-        }
     </div>
 
-    <h2 class="my-5">Orders</h2>
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        @foreach (var order in Model.Orders)
-        {
-            <div class="col">
-                <div class="card h-100 order-card" data-id="@order.OrderId" data-type="order">
-                    <div class="card-body">
-                        <h5 class="card-title">Order #@order.OrderId</h5>
-                        <p class="card-text">Customer: @order.OrderFor</p>
-                        <p class="card-text">Status: @order.Status</p>
+    <div class="container my-4">
+        <h2 class="mb-4">Products</h2>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            @foreach (var product in Model.Products)
+            {
+                <div class="col">
+                    <div class="card h-100 product-card" data-id="@product.ProductId" data-type="product">
+                        <div class="card-body">
+                            <h5 class="card-title">@product.Name</h5>
+                            <p class="card-text">Price: $@product.Price</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-        }
+            }
+        </div>
+
+        <h2 class="my-5">Orders</h2>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            @foreach (var order in Model.Orders)
+            {
+                <div class="col">
+                    <div class="card h-100 order-card" data-id="@order.OrderId" data-type="order">
+                        <div class="card-body">
+                            <h5 class="card-title">Order #@order.OrderId</h5>
+                            <p class="card-text">Customer: @order.OrderFor</p>
+                            <p class="card-text">Status: @order.Status</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
     </div>
-</div>
 
 <!-- Modal -->
 <div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">

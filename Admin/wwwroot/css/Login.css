@@ -1,131 +1,160 @@
-﻿/*﻿@import url('login.css');*/
-body {
+﻿/* General Reset */
+* {
     margin: 0;
+    padding: 0;
+    box-sizing: border-box;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: black;
-    background-image: url('../imags/background.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-    height: 100vh;
-    color: #fff;
 }
 
+body {
+    background-color: #1e1e2f;
+    color: #ffffff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Navbar */
 .navbar {
-    background-color: #1f1f1f;
-    color: #fff;
+    background-color: #2c2f4a;
     padding: 1rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.app-name {
+.navbar-brand .app-name {
     font-size: 1.5rem;
     font-weight: bold;
+    color: #ffffff;
 }
 
-.language-toggle .dropbtn {
-    background-color: transparent;
+/* Language Toggle */
+.language-toggle {
+    position: relative;
+}
+
+#lang-btn {
+    background-color: #3c3f5e;
+    color: #ffffff;
+    padding: 0.5rem 0.8rem;
     border: none;
-    color: #f8b6c1;
-    font-size: 1rem;
+    border-radius: 4px;
     cursor: pointer;
     display: flex;
     align-items: center;
+    gap: 0.3rem;
+    font-size: 0.9rem;
 }
 
-.language-toggle .dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #333;
-    right: 2rem;
-    top: 60px;
-    min-width: 120px;
-    box-shadow: 0px 8px 16px rgba(0,0,0,0.3);
-    z-index: 10;
-}
-
-.language-toggle .dropdown:hover .dropdown-content {
-    display: block;
-}
-
-.language-toggle .dropdown-content a {
-    color: #f8b6c1;
-    padding: 10px 15px;
-    text-decoration: none;
-    display: block;
-}
-
-    .language-toggle .dropdown-content a:hover {
-        background-color: #444;
+    #lang-btn .arrow {
+        transition: transform 0.2s ease;
     }
 
+    #lang-btn.active .arrow {
+        transform: rotate(180deg);
+    }
+
+.dropdown-content {
+    position: absolute;
+    top: 120%;
+    right: 0;
+    background-color: #2c2f4a;
+    border: 1px solid #444;
+    border-radius: 4px;
+    overflow: hidden;
+    z-index: 10;
+    width: 140px;
+}
+
+    .dropdown-content a {
+        display: block;
+        padding: 0.6rem 1rem;
+        color: #ffffff;
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+
+        .dropdown-content a:hover {
+            background-color: #3f4263;
+        }
+
+.hide {
+    display: none;
+}
+
+/* Login Container */
 .login-container {
-    height: calc(100vh - 80px);
+    flex-grow: 1;
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 2rem;
 }
 
 .login-form {
-    background: rgba(255, 255, 255, 0.10);
-    /*    backdrop-filter: blur(4px); */
-    /*    -webkit-backdrop-filter: blur(4px); */
-    padding: 2rem;
+    background-color: #2c2f4a;
+    padding: 2rem 2.5rem;
     border-radius: 12px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
     width: 100%;
     max-width: 400px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    font-weight: 800;
-    color: #fff;
 }
-
 
     .login-form h2 {
         text-align: center;
         margin-bottom: 1.5rem;
-        color: #f8b6c1;
+        color: #ffffff;
     }
 
 .input-group {
-    margin-bottom: 1.5rem;
-    position: relative;
+    margin-bottom: 1.2rem;
 }
 
     .input-group label {
         display: block;
         margin-bottom: 0.5rem;
-        color: #f8b6c1;
+        font-weight: 500;
+        color: #cfcfe2;
     }
 
     .input-group input {
         width: 100%;
-        padding: 12px;
-        border: 1px solid #666;
-        border-radius: 5px;
-        background-color: #444;
-        color: #fff;
+        padding: 0.6rem 0.8rem;
+        border: 1px solid #555876;
+        border-radius: 6px;
+        background-color: #1e1e2f;
+        color: #ffffff;
+        font-size: 1rem;
+        transition: border-color 0.3s;
     }
 
+        .input-group input:focus {
+            outline: none;
+            border-color: #6a6dff;
+        }
+
+/* Login Button */
 #login-button {
     width: 100%;
-    padding: 12px;
-    background-color: #ff69b4;
-    color: #fff;
+    padding: 0.7rem;
+    background-color: #6a6dff;
+    color: #ffffff;
     border: none;
-    border-radius: 5px;
+    border-radius: 6px;
+    font-size: 1rem;
     cursor: pointer;
-    transition: background 0.3s ease;
+    transition: background-color 0.3s;
 }
 
     #login-button:hover {
-        background-color: #ff1493;
+        background-color: #585bdb;
     }
 
+/* Error Message */
 .error-message {
-    text-align: center;
     margin-top: 1rem;
-    color: #ffb3b3;
+    text-align: center;
+    color: #ff6b6b;
+    font-weight: bold;
 }

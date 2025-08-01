@@ -1,4 +1,5 @@
-﻿using Admin.Models;
+﻿using Admin.DTOs;
+using Admin.Models;
 using Microsoft.AspNetCore.Mvc;
 using Shared.DTOs;
 using System.Net;
@@ -20,6 +21,28 @@ namespace ProductsManagement.Models
             _token = httpContextAccessor.HttpContext?.Session.GetString("token") ?? "INVALID";
         }
 
+        public async Task<ApiResponse<Downloadables>> GetInvoiceAsync(int orderId)
+        {
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{_baseUrl}api/order/invoice/{orderId}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token);
+            HttpResponseMessage response = await _httpClient.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsByteArrayAsync();
+                Downloadables file = new Downloadables
+                {
+                    Content = content,
+                    FileName = $"Invoice_{orderId}.pdf",
+                    ContentType = "application/pdf"
+                };
+                return ApiResponse<Downloadables>.Ok(file, "Invoice retrieved successfully", (int)response.StatusCode);
+            }
+            else
+            {
+                // Handle error response
+                return ApiResponse<Downloadables>.Fail($"Failed to retrieve invoice: {response.ReasonPhrase}", (int)response.StatusCode);
+            }
+        }
         public async Task<ApiResponse<List<CategorySummaryDto>>> GetCategoriesAsync()
         {
             var response = await _httpClient.GetAsync($"{_baseUrl}api/category/categories");

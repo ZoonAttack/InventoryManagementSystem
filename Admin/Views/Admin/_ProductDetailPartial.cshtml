@@ -2,23 +2,29 @@
 @model ProductDetailsDto
 <link rel="stylesheet" href="~/css/Dashboard.css" />
 
-<div class="product-details-popup" style="background-color: #1f1f1f; color: #f8b6c1; padding: 20px; border-radius: 12px;">
-    <h2 style="color: #ff69b4;">@Model.Name</h2>
+<div class="product-detail-modal">
+    <h3 class="product-title">@Model.Name</h3>
 
-    <img src="@Model.ImageUrl" alt="@Model.Name" style="max-width: 200px; border-radius: 8px; border: 2px solid #f8b6c1; margin-bottom: 15px;" />
+    <div class="product-detail-content">
+        <div class="product-image-wrapper">
+            <img src="@Model.ImageUrl" alt="@Model.Name" class="product-image" />
+        </div>
 
-    <p><strong>Description:</strong> @Model.Description</p>
-    <p><strong>Category:</strong> @Model.Category</p>
-    <p><strong>Price:</strong> $@Model.Price</p>
-    <p><strong>Status:</strong> @Model.Status</p>
+        <div class="product-info">
+            <p><strong>Description:</strong> @Model.Description</p>
+            <p><strong>Category:</strong> @Model.Category</p>
+            <p><strong>Price:</strong> $@Model.Price</p>
+            <p><strong>Status:</strong> @Model.Status</p>
 
-    <div class="actions mt-4" style="display: flex; gap: 10px; flex-wrap: wrap;">
-        <form method="get" asp-action="UpdateProduct" asp-route-Id="@Model.Id" style="display:inline;">
-            <button type="submit" class="pink-button">Update Product</button>
-        </form>
+            <div class="product-action-buttons">
+                <form method="get" asp-action="UpdateProduct" asp-route-Id="@Model.Id">
+                    <button type="submit" class="btn-theme">Update Product</button>
+                </form>
 
-        <form method="post" asp-action="DeleteProduct" asp-route-Id="@Model.Id" style="display:inline;">
-            <button type="submit" class="btn btn-danger">Delete Product</button>
-        </form>
+                <form method="post" asp-action="DeleteProduct" asp-route-Id="@Model.Id" onsubmit="return confirm('Are you sure?');">
+                    <button type="submit" class="btn-danger">Delete Product</button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
