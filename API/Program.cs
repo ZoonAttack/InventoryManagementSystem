@@ -103,7 +103,7 @@ namespace ProductsManagement
             builder.Services.AddOptions();
             builder.Services.Configure<ResendClientOptions>(o =>
             {
-                o.ApiToken = Environment.GetEnvironmentVariable("RESEND_APITOKEN");
+                o.ApiToken = builder.Configuration["RESEND:APIKEY"];
 
             });
             builder.Services.AddHttpClient<ResendClient>();
