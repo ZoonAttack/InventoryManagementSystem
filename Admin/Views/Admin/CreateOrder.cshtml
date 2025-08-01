@@ -1,6 +1,7 @@
 ﻿@model CreateOrderViewModel
 
 <h2>Create Order</h2>
+<link rel="stylesheet" href="~/css/create-order.css" />
 
 <form asp-action="CreateOrder" method="post">
     <div class="form-group">
@@ -32,9 +33,15 @@
 
     <div id="order-items-container"></div>
 
-    <button type="button" id="add-item-btn" class="btn btn-secondary mb-3">Add Order Item</button>
+<div class="row mt-4">
+    <div class="col-auto">
+        <button type="button" id="add-item-btn" class="btn btn-outline-success">Add Order Item</button>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Place Order</button>
+    </div>
+</div>
 
-    <button type="submit" class="btn btn-success">Place Order</button>
 </form>
 
 @section Scripts {

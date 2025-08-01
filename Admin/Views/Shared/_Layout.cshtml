@@ -7,43 +7,135 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Admin.styles.css" asp-append-version="true" />
+    <style>
+        body {
+            display: flex;
+            margin: 0;
+            overflow-x: hidden;
+            background-color: #0d1b2a;
+            color: #f1f1f1;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #1e1e1e;
+            min-height: 100vh;
+            color: #f1f1f1;
+            transition: width 0.3s;
+            position: relative;
+        }
+
+            .sidebar.collapsed {
+                width: 60px;
+            }
+
+            .sidebar h2,
+            .sidebar p,
+            .sidebar form,
+            .sidebar .btn {
+                transition: opacity 0.3s;
+            }
+
+            .sidebar.collapsed h2,
+            .sidebar.collapsed p,
+            .sidebar.collapsed form {
+                opacity: 0;
+                pointer-events: none;
+            }
+
+        .toggle-btn {
+            position: absolute;
+            top: 50%;
+            right: -15px;
+            transform: translateY(-50%);
+            background-color: #343a40;
+            border-radius: 0 5px 5px 0;
+            width: 30px;
+            height: 40px;
+            border: none;
+            color: #f1f1f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 2rem;
+            transition: margin-left 0.3s;
+        }
+
+        .sidebar.collapsed + .main-content {
+            margin-left: 60px;
+        }
+
+        .sidebar form .btn {
+            text-align: left;
+            font-size: 1rem;
+            padding: 10px;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+            .sidebar form .btn:hover {
+                background-color: #0d6efd;
+                color: white;
+                transform: scale(1.03);
+            }
+    </style>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Admin</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+    <!-- Sidebar -->
+    <nav class="sidebar d-flex flex-column p-3" id="sidebar">
+        <a href="@Url.Action("Dashboard", "Admin")" class="text-info mb-4 text-decoration-none">
+            <h2 class="m-0">My Dashboard</h2>
+        </a>
+
+        <div class="mb-4">
+            <p>Welcome, Admin</p>
+        </div>
+
+        <div class="mb-4 d-grid gap-2">
+            <form method="get" asp-action="CreateProduct" asp-controller="Admin">
+                <button type="submit" class="btn btn-outline-info w-100">Create Product</button>
+            </form>
+            <form method="get" asp-action="CreateOrder" asp-controller="Admin">
+                <button type="submit" class="btn btn-outline-info w-100">Create Order</button>
+            </form>
+            <form method="get" asp-action="CreateCategory" asp-controller="Admin">
+                <button type="submit" class="btn btn-outline-info w-100">Create Category</button>
+            </form>
+        </div>
+
+        <div class="mt-auto">
+            <form method="post" asp-action="Logout" asp-controller="Admin">
+                <button type="submit" class="btn btn-outline-danger w-100">Logout</button>
+            </form>
+        </div>
+
+        <button class="toggle-btn" onclick="toggleSidebar()">
+            <span id="toggle-icon">←</span>
+        </button>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        @RenderBody()
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - Admin - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const icon = document.getElementById('toggle-icon');
+            sidebar.classList.toggle('collapsed');
+            icon.textContent = sidebar.classList.contains('collapsed') ? '→' : '←';
+        }
+    </script>
 </body>
 </html>
