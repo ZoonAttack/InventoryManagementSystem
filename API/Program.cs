@@ -104,7 +104,6 @@ namespace ProductsManagement
             builder.Services.Configure<ResendClientOptions>(o =>
             {
                 var token = Environment.GetEnvironmentVariable("RESEND_APITOKEN");
-                Console.WriteLine($"RESEND_APITOKEN: {token}"); // Only for debugging; remove in production
                 o.ApiToken = token!;
 
             });
