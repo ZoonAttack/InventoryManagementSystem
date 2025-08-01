@@ -1,0 +1,112 @@
+﻿/* Body Theme */
+body {
+    background-color: #0d1b2a; /* Dark blue */
+    color: #e0e1dd;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Sidebar fix */
+.main-content {
+    margin-left: 260px; /* Space for sidebar */
+    padding: 40px 20px;
+}
+
+/* Form styling for Update Order */
+form.update-order-form {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #1b263b;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+    form.update-order-form h2,
+    form.update-order-form h4 {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+/* Form groups */
+.form-group {
+    margin-bottom: 20px;
+}
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+    }
+
+.form-control {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #415a77;
+    border-radius: 6px;
+    background-color: #e0e1dd;
+    color: #000;
+}
+
+    .form-control:focus {
+        outline: none;
+        border-color: #fca311;
+        box-shadow: 0 0 0 3px rgba(252,163,17,0.2);
+    }
+
+/* Buttons */
+.btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-success {
+    background-color: #2a9d8f;
+    color: white;
+}
+
+    .btn-success:hover {
+        background-color: #21867a;
+    }
+
+.btn-secondary {
+    background-color: #264653;
+    color: white;
+}
+
+    .btn-secondary:hover {
+        background-color: #1b3c4c;
+    }
+
+.btn-danger {
+    background-color: #e63946;
+    color: white;
+}
+
+    .btn-danger:hover {
+        background-color: #b42f39;
+    }
+
+/* Card for each order item */
+#update-order-items-container .card {
+    background-color: #778da9;
+    color: #1b263b;
+}
+
+/* Responsive layout */
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+        padding: 20px 10px;
+    }
+
+    form.update-order-form {
+        width: 100%;
+        padding: 20px;
+    }
+}

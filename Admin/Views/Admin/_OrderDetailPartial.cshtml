@@ -66,9 +66,8 @@
         <form method="get" asp-action="UpdateOrder" asp-route-id="@Model.OrderId" style="display:inline;">
             <button type="submit" class="btn btn-info" style="background-color: #0074D9; border: none;">Update Order</button>
         </form>
-
         <!-- Delete Order -->
-        <form method="post" asp-action="DeleteOrder" asp-route-id="@Model.OrderId" style="display:inline;">
+        <form method="post" asp-action="DeleteOrder" asp-route-id="@Model.OrderId" style="display:inline;" onsubmit="return confirm('Are you sure?');">
             <button type="submit" class="btn btn-danger" style="background-color: #FF4136; border: none;">Delete Order</button>
         </form>
 
