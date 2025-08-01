@@ -15,6 +15,18 @@ namespace Admin
             builder.Services.AddSession();
             builder.Services.AddHttpContextAccessor();
 
+            builder.Services.AddAuthentication("MyCookieAuth")
+                          .AddCookie("MyCookieAuth", options =>
+                          {
+                              options.LoginPath = "/Admin/Login";
+                              options.LogoutPath = "/Admin/Logout";
+                              //options.AccessDeniedPath = "/Account/AccessDenied";
+                              options.Cookie.HttpOnly = true;
+                              options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+                          });
+
+            builder.Services.AddAuthorization();
+
             var app = builder.Build();
 
             app.UseSession();
@@ -31,6 +43,7 @@ namespace Admin
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(

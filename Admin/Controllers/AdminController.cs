@@ -5,6 +5,9 @@ using ProductsManagement.Models;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Shared.Utility;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication;
+using System.Security.Claims;
 
 namespace Admin.Controllers
 {
@@ -35,14 +38,24 @@ namespace Admin.Controllers
                 ViewData["ErrorMessage"] = result.Message ?? "Login failed.";
                 return View(loginDto);
             }
-
             if (data.Item2.Equals("admin"))
             {
-                // Login success - save token in TempData, Session, or Cookie
+                // Save token in session if needed
                 HttpContext.Session.SetString("token", data.Item1);
-                HttpContext.Session.SetString("role", data.Item2);
 
-                return RedirectToAction("Dashboard", "Admin"); // Change to your actual page
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, loginDto.Email),
+                    new Claim(ClaimTypes.Role, data.Item2),
+                    new Claim("AccessToken", data.Item1) // optional if you want to use it later
+                };
+
+                var identity = new ClaimsIdentity(claims, "MyCookieAuth");
+                var principal = new ClaimsPrincipal(identity);
+
+                await HttpContext.SignInAsync("MyCookieAuth", principal);
+
+                return RedirectToAction("Dashboard", "Admin");
             }
             ViewData["ErrorMessage"] = data.Item2 ?? "Invalid login.";
             return View(loginDto);
@@ -52,7 +65,9 @@ namespace Admin.Controllers
         public async Task<IActionResult> Logout()
         {
             await _apiCall.LogoutAsync();
-            // Clear session or cookie
+
+            // Then sign out locally
+            await HttpContext.SignOutAsync("MyCookieAuth");
             HttpContext.Session.Clear();
             return RedirectToAction("Login", "Admin");
         }
@@ -61,6 +76,7 @@ namespace Admin.Controllers
 
         #region Products
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> UpdateProduct(int id)
         {
 
@@ -89,8 +105,8 @@ namespace Admin.Controllers
             };
             return View("UpdateProduct", vm);
         }
-
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> UpdateProduct(int id, CreateProductViewModel dto)
         {
             var result = await _apiCall.UpdateProductAsync(dto.Product, id);
@@ -106,6 +122,7 @@ namespace Admin.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult CreateProduct()
         {
             var categories = _apiCall.GetCategoriesAsync().Result.Data;
@@ -119,6 +136,7 @@ namespace Admin.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateProduct(CreateProductViewModel dto)
         {
             var result = await _apiCall.CreateProductAsync(dto.Product);
@@ -132,6 +150,7 @@ namespace Admin.Controllers
             return RedirectToAction("Dashboard");
         }
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> DeleteProduct(int Id)
         {
             var result = await _apiCall.DeleteProductAsync(Id);
@@ -149,6 +168,7 @@ namespace Admin.Controllers
 
         #region Orders
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> UpdateOrder(int id)
         {
 
@@ -189,6 +209,7 @@ namespace Admin.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult CreateOrder()
         {
             CreateOrderViewModel vm = new CreateOrderViewModel
@@ -203,6 +224,7 @@ namespace Admin.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateOrder(CreateOrderViewModel dto)
         {
             var result = await _apiCall.CreateOrderAsync(dto.Order);
@@ -218,6 +240,7 @@ namespace Admin.Controllers
 
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> DeleteOrder(int id)
         {
             var result = await _apiCall.DeleteOrderAsync(id);
@@ -234,6 +257,7 @@ namespace Admin.Controllers
 
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> DownloadInvoice(int id)
         {
             var result = await _apiCall.GetInvoiceAsync(id);
@@ -252,11 +276,14 @@ namespace Admin.Controllers
         #region Categories
 
         [HttpGet]
+        [Authorize]
         public IActionResult CreateCategory()
         {
             return View();
         }
         [HttpPost]
+        [Authorize]
+
         public async Task<IActionResult> CreateCategory(CreateCategoryDto dto)
         {
             var result = await _apiCall.CreateCategoryAsync(dto);
@@ -270,6 +297,7 @@ namespace Admin.Controllers
         }
         #endregion
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Dashboard()
         {
             var products = await _apiCall.GetProductsAsync();
