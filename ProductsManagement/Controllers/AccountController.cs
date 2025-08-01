@@ -23,12 +23,14 @@ namespace ProductsManagement.Controllers
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
         private readonly EmailService _emailService;
-        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager,EmailService emailService, IOptions<JWTSettings> JWTOptions)
+        private readonly ILogger<AccountController> _logger;
+        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager,EmailService emailService, IOptions<JWTSettings> JWTOptions, ILogger<AccountController> Logger)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _emailService = emailService;
             _jwtSettings = JWTOptions.Value;
+            _logger = Logger;
 
         }
         [HttpPost("login")]
@@ -152,8 +154,8 @@ namespace ProductsManagement.Controllers
             var result = await _userManager.ResetPasswordAsync(user, dto.Token, dto.NewPassword);
             if (!result.Succeeded)
             {
-                var errorMessages = result.Errors.Select(e => e.Description);
-                return BadRequest(new { errors = errorMessages });
+                _logger.LogError("Password reset failed for user {Email}: {Errors}", dto.Email, string.Join(", ", result.Errors.Select(e => e.Description)));
+                return BadRequest("Password reset failed");
             }
 
             return Ok(new { message = "Password has been reset successfully" });
