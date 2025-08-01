@@ -90,6 +90,15 @@ namespace ProductsManagement
                 };
             });
 
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("AdminOnly", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireRole("admin");
+                });
+            });
+
             // Resend
             builder.Services.AddOptions();
             builder.Services.Configure<ResendClientOptions>(o =>

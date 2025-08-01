@@ -249,7 +249,26 @@ namespace Admin.Controllers
         #endregion
 
 
+        #region Categories
 
+        [HttpGet]
+        public IActionResult CreateCategory()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreateCategory(CreateCategoryDto dto)
+        {
+            var result = await _apiCall.CreateCategoryAsync(dto);
+            if (!result.Success)
+            {
+                ViewBag.Error = result.Message;
+                return View(dto);
+            }
+            TempData["Message"] = "Category created successfully";
+            return RedirectToAction("Dashboard");
+        }
+        #endregion
         [HttpGet]
         public async Task<IActionResult> Dashboard()
         {

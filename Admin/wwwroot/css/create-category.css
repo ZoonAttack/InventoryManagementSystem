@@ -1,0 +1,63 @@
+﻿.create-category-container {
+    background-color: #0c1e3b;
+    color: #ffffff;
+    padding: 2rem;
+    border-radius: 12px;
+    max-width: 600px;
+    margin: 2rem auto;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    font-family: 'Segoe UI', sans-serif;
+}
+
+    .create-category-container h2 {
+        margin-bottom: 1.5rem;
+        text-align: center;
+        color: #ffffff;
+    }
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+input.form-control,
+textarea.form-control {
+    width: 100%;
+    padding: 0.6rem;
+    border: none;
+    border-radius: 6px;
+    background-color: #1b2d50;
+    color: #ffffff;
+}
+
+    input.form-control::placeholder,
+    textarea.form-control::placeholder {
+        color: #ccc;
+    }
+
+.text-danger {
+    color: #ff6b6b;
+    font-size: 0.9rem;
+}
+
+.btn-submit {
+    background-color: #1f6feb;
+    color: #fff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    display: block;
+    margin: 1rem auto 0 auto;
+    transition: background-color 0.3s ease;
+}
+
+    .btn-submit:hover {
+        background-color: #155aca;
+    }

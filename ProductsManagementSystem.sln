@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductsManagement", "ProductsManagement\ProductsManagement.csproj", "{FF9D163E-B5E5-4519-A9FD-DE8276FF693C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "ProductsManagement\API.csproj", "{FF9D163E-B5E5-4519-A9FD-DE8276FF693C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Admin", "Admin\Admin.csproj", "{821DEE7B-BE19-4D89-A639-3F708BF95FC4}"
 EndProject
