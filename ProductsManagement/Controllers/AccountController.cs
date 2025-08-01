@@ -22,14 +22,12 @@ namespace ProductsManagement.Controllers
 
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
-        private readonly ApplicationDbContext _dbContext;
-
-        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager, ApplicationDbContext dbContext, IOptions<JWTSettings> JWTOptions)
+        private readonly EmailService _emailService;
+        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager,EmailService emailService, IOptions<JWTSettings> JWTOptions)
         {
             _signInManager = signInManager;
             _userManager = userManager;
-            _dbContext = dbContext;
-
+            _emailService = emailService;
             _jwtSettings = JWTOptions.Value;
 
         }
@@ -94,7 +92,8 @@ namespace ProductsManagement.Controllers
                 {
                     return BadRequest(new { errors = result.Errors.Select(e => e.Description) });
                 }
-            } return BadRequest(new { errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
+            }
+            return BadRequest(new { errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
         }
 
 
@@ -106,5 +105,59 @@ namespace ProductsManagement.Controllers
             _signInManager.SignOutAsync().Wait();
             return Ok(new { message = "User logged out successfully" });
         }
+
+
+        [HttpPost("forgot-password/{email}")]
+        public async Task<IActionResult> ForgotPassword(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return BadRequest(new { errors = new[] { "Email is required" } });
+            }
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return NotFound(new { errors = new[] { "User not found" } });
+            }
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            if (string.IsNullOrEmpty(token))
+            {
+                return BadRequest(new { errors = new[] { "Failed to generate password reset token" } });
+            }
+            string baseURL = Environment.GetEnvironmentVariable("DOMAIN");
+
+            _emailService.EmailSend(new SendEmailDto
+            {
+                To = email,
+                Subject = "Password Reset",
+                Content = $"Please use the following token to reset your password: {baseURL}reset-password?token={token}"
+            }).Wait();
+            return Ok(new { message = "If an account with that email exists, a password reset link has been sent." });
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
+        {
+            if (string.IsNullOrEmpty(dto.Email) || string.IsNullOrEmpty(dto.Token) || string.IsNullOrEmpty(dto.NewPassword))
+            {
+                return BadRequest(new { errors = new[] { "Invalid input" } });
+            }
+
+            var user = await _userManager.FindByEmailAsync(dto.Email);
+            if (user == null)
+            {
+                return NotFound(new { errors = new[] { "User not found" } });
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user, dto.Token, dto.NewPassword);
+            if (!result.Succeeded)
+            {
+                var errorMessages = result.Errors.Select(e => e.Description);
+                return BadRequest(new { errors = errorMessages });
+            }
+
+            return Ok(new { message = "Password has been reset successfully" });
+        }
+
     }
 }

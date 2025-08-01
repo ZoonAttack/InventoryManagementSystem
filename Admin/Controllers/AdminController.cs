@@ -17,6 +17,8 @@ namespace Admin.Controllers
             _logger = logger;
             _apiCall = apiCall;
         }
+
+        #region Authentication
         [HttpGet]
         public IActionResult Login()
         {
@@ -55,22 +57,9 @@ namespace Admin.Controllers
             return RedirectToAction("Login", "Admin");
         }
 
+        #endregion
 
-        public async Task<IActionResult> Dashboard()
-        {
-            var products = await _apiCall.GetProductsAsync();
-            var productsData = products.Data;
-            var orders = await _apiCall.GetOrdersAsync();
-            var ordersData = orders.Data;
-            AdminDashboardViewModel model = new AdminDashboardViewModel()
-            {
-                Products = productsData ?? new List<ProductSummaryDto>(),
-                Orders = ordersData ?? new List<OrderSummaryDto>()
-            };
-
-            return View(model);
-        }
-
+        #region Products
         [HttpGet]
         public async Task<IActionResult> UpdateProduct(int id)
         {
@@ -142,7 +131,23 @@ namespace Admin.Controllers
             TempData["Message"] = "Product created successfully";
             return RedirectToAction("Dashboard");
         }
+        [HttpPost]
+        public async Task<IActionResult> DeleteProduct(int Id)
+        {
+            var result = await _apiCall.DeleteProductAsync(Id);
+            if (result.Success)
+            {
+                return RedirectToAction("Dashboard");
+            }
+            else
+            {
+                ViewData["ErrorMessage"] = result.Message ?? "Failed to delete product.Has ongoing items";
+                return RedirectToAction("Dashboard");
+            }
+        }
+        #endregion
 
+        #region Orders
         [HttpGet]
         public async Task<IActionResult> UpdateOrder(int id)
         {
@@ -181,20 +186,6 @@ namespace Admin.Controllers
 
             TempData["Message"] = "Order updated successfully";
             return RedirectToAction("Dashboard");
-        }
-        [HttpPost]
-        public async Task<IActionResult> DeleteProduct(int Id)
-        {
-            var result = await _apiCall.DeleteProductAsync(Id);
-            if (result.Success)
-            {
-                return RedirectToAction("Dashboard");
-            }
-            else
-            {
-                ViewData["ErrorMessage"] = result.Message ?? "Failed to delete product.Has ongoing items";
-                return RedirectToAction("Dashboard");
-            }
         }
 
         [HttpGet]
@@ -242,7 +233,38 @@ namespace Admin.Controllers
         }
 
 
+        [HttpGet]
+        public async Task<IActionResult> DownloadInvoice(int id)
+        {
+            var result = await _apiCall.GetInvoiceAsync(id);
+            if(!result.Success || result.Data == null)
+            {
+                TempData["Error"] = result.Message ?? "Failed to retrieve invoice.";
+                return RedirectToAction("Dashboard");
+            }
+            var file = result.Data;
+            return File(file.Content, file.ContentType, file.FileName);
+        }
 
+        #endregion
+
+
+
+        [HttpGet]
+        public async Task<IActionResult> Dashboard()
+        {
+            var products = await _apiCall.GetProductsAsync();
+            var productsData = products.Data;
+            var orders = await _apiCall.GetOrdersAsync();
+            var ordersData = orders.Data;
+            AdminDashboardViewModel model = new AdminDashboardViewModel()
+            {
+                Products = productsData ?? new List<ProductSummaryDto>(),
+                Orders = ordersData ?? new List<OrderSummaryDto>()
+            };
+
+            return View(model);
+        }
         [HttpGet]
         public async Task<IActionResult> GetDetailsPartial(int id, string type)
         {
@@ -262,18 +284,5 @@ namespace Admin.Controllers
             return BadRequest("Unknown type.");
         }
 
-
-        [HttpGet]
-        public async Task<IActionResult> DownloadInvoice(int id)
-        {
-            var result = await _apiCall.GetInvoiceAsync(id);
-            if(!result.Success || result.Data == null)
-            {
-                TempData["Error"] = result.Message ?? "Failed to retrieve invoice.";
-                return RedirectToAction("Dashboard");
-            }
-            var file = result.Data;
-            return File(file.Content, file.ContentType, file.FileName);
-        }
     }
 }

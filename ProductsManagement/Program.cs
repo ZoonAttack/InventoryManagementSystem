@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 using ProductsManagement.Context;
 using ProductsManagement.Data;
 using ProductsManagement.Data.Utility;
+using Resend;
 using System.Text;
 
 namespace ProductsManagement
@@ -17,7 +18,8 @@ namespace ProductsManagement
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddIdentity<User, IdentityRole>()
-                            .AddEntityFrameworkStores<ApplicationDbContext>();
+                            .AddEntityFrameworkStores<ApplicationDbContext>()
+                            .AddTokenProvider<DataProtectorTokenProvider<User>>(TokenOptions.DefaultProvider);
             builder.Services.Configure<IdentityOptions>(options =>
             {
                 options.SignIn.RequireConfirmedEmail = false;
@@ -87,11 +89,20 @@ namespace ProductsManagement
                     IssuerSigningKey = new SymmetricSecurityKey(key)
                 };
             });
-            builder.Services.AddAuthorization(options =>
-            {
-                options.AddPolicy("AdminOnly", policy => policy.RequireRole("admin"));
-            });
 
+            // Resend
+            builder.Services.AddOptions();
+            builder.Services.Configure<ResendClientOptions>(o =>
+            {
+                var token = Environment.GetEnvironmentVariable("RESEND_APITOKEN");
+                Console.WriteLine($"RESEND_APITOKEN: {token}"); // Only for debugging; remove in production
+                o.ApiToken = token!;
+
+            });
+            builder.Services.AddHttpClient<ResendClient>();
+            builder.Services.AddTransient<IResend, ResendClient>();
+
+            builder.Services.AddScoped<EmailService>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
