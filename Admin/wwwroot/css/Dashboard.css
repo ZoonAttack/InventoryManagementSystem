@@ -51,6 +51,7 @@
     font-size: 1.5rem;
     font-weight: bold;
     color: white;
+
 }
 
 .container {
@@ -61,16 +62,15 @@
     margin-top: 20px;
 }
 
-/* الكروت */
 .card {
-    border: 1px solid #000;
+    border: 1px solid black; 
+    border-radius: 12px;
     background-color: white;
     color: black;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
 }
 
     .card:hover {
@@ -80,6 +80,7 @@
 
 .card-title {
     font-weight: bold;
+    font-size: 1.25rem;
 }
 
 
@@ -107,3 +108,42 @@
         color: black;
         border: 2px solid white;
     }
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 2rem;
+}
+
+/* أقسام المنتجات والطلبات */
+.section-wrapper {
+    flex: 1;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 1rem;
+    overflow-y: auto;
+    max-height: 450px;
+}
+
+    /* العناوين داخل الأقسام */
+    .section-wrapper h2 {
+        color: #000;
+        margin-bottom: 1rem;
+    }
+
+/* الشبكة */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+.card-body {
+    padding: 1rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 1.1rem;
+}

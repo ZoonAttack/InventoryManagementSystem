@@ -9,7 +9,6 @@ body {
     flex-direction: column;
 }
 
-/* ‘—Ìÿ «· ‰ﬁ· */
 .navbar {
     background-color: black;
     color: white;
@@ -35,7 +34,6 @@ body {
         text-decoration: underline;
     }
 
-/* «·ﬁ”„ «·√Ê”ÿ Ê«·Ì„Ì‰ -  ‰”Ìﬁ «·—Ê«»ÿ ﬂ√“—«— */
 .navbar-center a,
 .navbar-right a {
     background-color: white;
@@ -53,14 +51,12 @@ body {
         margin-left: 0;
     }
 
-    /*  √ÀÌ— «· ÕÊÌ„ */
     .navbar-center a:hover,
     .navbar-right a:hover {
         background-color: black;
         color: white;
     }
 
-/*  — Ì» «·√ﬁ”«„ «·À·«À… */
 .navbar-left,
 .navbar-center,
 .navbar-right {

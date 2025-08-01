@@ -1,57 +1,49 @@
 ﻿@using Shared.DTOs
 @model OrderDetailsDto
+<div class="invoice-container">
+  
+<div >
+    <h5 class="mb-3">Order #@Model.OrderId</h5>
+    <p><strong>Status:</strong> @Model.Status</p>
+    <p><strong>Ordered For:</strong> @Model.OrderFor</p>
+    <p><strong>Created At:</strong> @Model.CreatedAt.ToString("g")</p>
+    <p><strong>Total Amount:</strong> $@Model.TotalAmount</p>
 
-<div class="modal fade" id="orderDetailsModal" tabindex="-1" role="dialog" aria-labelledby="orderDetailsModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content" style="background-color: white; color: black; border-radius: 12px;">
-            <div class="modal-header">
-                <h5 class="modal-title" id="orderDetailsModalLabel">Order #@Model.OrderId</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="font-size: 1.5rem;">
-                    &times;
-                </button>
-            </div>
-            <div class="modal-body">
-                <p><strong>Status:</strong> @Model.Status</p>
-                <p><strong>Ordered For:</strong> @Model.OrderFor</p>
-                <p><strong>Created At:</strong> @Model.CreatedAt.ToString("g")</p>
-                <p><strong>Total Amount:</strong> $@Model.TotalAmount</p>
+    <h5 class="mt-4">Items:</h5>
+    <ul class="list-unstyled">
+        @foreach (var item in Model.OrderItems)
+        {
+            <li class="mb-2 p-2 rounded" >
+                <div class="d-flex align-items-center">
+                    <img src="@item.ImageURL" alt="Product" />
+                    <span><strong>Qty:</strong> @item.Quantity</span>
+                </div>
+            </li>
+        }
+    </ul>
+        <style>
+           
+                .no-print
+            {
+                display: none !important;
+            }
+        </style>
 
-                <h5 class="mt-4">Items:</h5>
-                <ul class="list-unstyled">
-                    @foreach (var item in Model.OrderItems)
-                    {
-                        <li class="mb-2 p-2 rounded" style="background-color: #f0f0f0;">
-                            <div class="d-flex align-items-center">
-                                <img src="@item.ImageURL" alt="Product" style="width: 50px; border-radius: 6px; margin-right: 10px;" />
-                                <span><strong>Qty:</strong> @item.Quantity</span>
-                            </div>
-                        </li>
-                    }
-                </ul>
+    <h5 class="mt-4">Payment:</h5>
+    <p><strong>Method:</strong> @Model.Payment?.PaymentMethod</p>
+    <p><strong>Date:</strong> @Model.Payment?.PaidAt.ToString("g")</p>
 
-                <h5 class="mt-4">Payment:</h5>
-                <p><strong>Method:</strong> @Model.Payment?.PaymentMethod</p>
-                <p><strong>Date:</strong> @Model.Payment?.PaidAt.ToString("g")</p>
+    <h5 class="mt-4">Invoice:</h5>
+    <p><strong>Invoice Number:</strong> @Model.Invoice?.InvoiceNumber</p>
+    <div class="d-flex justify-content-between flex-wrap mt-4 no-print" >
+        <form method="get" asp-action="UpdateOrder" asp-route-id="@Model.OrderId">
+            <button type="submit" class="btn btn-dark">Update Order</button>
+        </form>
 
-                <h5 class="mt-4">Invoice:</h5>
-                <p><strong>Invoice Number:</strong> @Model.Invoice?.InvoiceNumber</p>
-            </div>
-
-            <div class="modal-footer d-flex justify-content-between flex-wrap">
-                <form method="get" asp-action="UpdateOrder" asp-route-id="@Model.OrderId">
-                    <button type="submit" class="btn btn-dark">Update Order</button>
-                </form>
-
-                <form method="post" asp-action="DeleteOrder" asp-route-id="@Model.OrderId">
-                    <button type="submit" class="btn btn-danger">Delete Order</button>
-                </form>
-
-                <form method="get" asp-action="DownloadInvoice" asp-route-id="@Model.OrderId">
-                    <button type="submit" class="btn btn-dark">Download Invoice</button>
-                </form>
-            </div>
-        </div>
+        <form method="post" asp-action="DeleteOrder" asp-route-id="@Model.OrderId" onsubmit="return confirm('هل أنت متأكد من حذف الطلب؟');">
+            <button type="submit" class="btn btn-danger">Delete Order</button>
+        </form>
     </div>
-</div>
 
-      
+</div>
+</div>

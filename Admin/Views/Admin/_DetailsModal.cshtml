@@ -1,0 +1,120 @@
+﻿<style>
+    .invoice-container {
+        background-color: #fff;
+        color: #000;
+        padding: 25px;
+        border-radius: 10px;
+        max-width: 800px;
+        margin: auto;
+    }
+
+    /* تصميم النافذة بشكل فاتورة */
+    #detailModal .modal-content {
+        background-color: white;
+        color: black;
+        border-radius: 12px;
+        padding: 30px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    }
+
+    /* تمركز النافذة عموديًا وأفقيًا */
+    #detailModal .modal-dialog {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-height: 100vh !important;
+    }
+
+    /* محتوى ديناميكي في وسط النافذة وبحدود خفيفة */
+    #modalContent {
+        max-height: 60vh;
+        overflow-y: auto;
+        padding: 20px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        background-color: #fdfdfd;
+        margin-bottom: 30px;
+    }
+
+    /* أزرار الفاتورة */
+    #detailModal .modal-footer {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+        padding-top: 10px;
+    }
+
+    #detailModal .btn {
+        background-color: black;
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        min-width: 140px;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+        #detailModal .btn:hover {
+            background-color: #333;
+        }
+
+    /* زر الإغلاق */
+    #detailModal .btn-close {
+        filter: invert(0);
+    }
+</style>
+
+
+<div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" style="font-size: 1.5rem ;font-weight:bold ">Details</h5>
+            </div>            
+            <div class="modal-body" id="modalContent">
+                <!-- المحتوى الديناميكي يظهر هنا -->
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn" id="printModalBtn">Print</button>
+                <button type="button" class="btn" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+        document.getElementById('printModalBtn').addEventListener('click', function () {
+            var printContents = document.getElementById('modalContent').innerHTML;
+            var originalContents = document.body.innerHTML;
+
+            document.body.innerHTML = printContents;
+            window.print();
+            document.body.innerHTML = originalContents;
+            window.location.reload();
+        });
+    </script>
+    <script>
+    $(document).on('click', '.product-card, .order-card', function () {
+        const id = $(this).data('id');
+        const type = $(this).data('type');
+
+        $('#modalContent').html('<div class="text-center my-4">Loading...</div>');
+        $('#detailModal').modal('show');
+
+        $.ajax({
+            url: `/Admin/GetDetailsPartial`,
+            type: 'GET',
+            data: { id: id, type: type },
+            success: function (html) {
+                $('#modalContent').html(html);
+            },
+            error: function () {
+                $('#modalContent').html('<div class="text-danger">Failed to load details.</div>');
+            }
+        });
+    });
+</script>
+

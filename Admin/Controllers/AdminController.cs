@@ -249,14 +249,12 @@ namespace Admin.Controllers
             if (type == "product")
             {
                 var product = await _apiCall.GetProductAsync(id);
-                var productData = product.Data;
-                return PartialView("_ProductDetailPartial", productData);
+                return PartialView("_ProductDetailPartial", product.Data);
             }
             else if (type == "order")
             {
                 var order = await _apiCall.GetOrderAsync(id);
-                var orderData = order.Data;
-                return PartialView("_OrderDetailPartial", orderData);
+                return PartialView("_OrderDetailPartial", order.Data);
             }
 
             return BadRequest("Unknown type.");
