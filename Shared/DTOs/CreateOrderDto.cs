@@ -1,4 +1,6 @@
-﻿namespace Shared.DTOs
+﻿using Shared.Utility;
+
+namespace Shared.DTOs
 {
     public class CreateOrderDto
     {
@@ -8,6 +10,6 @@
         public string ShippingAddress { get; set; }
         public string PaymentMethod { get; set; }
 
-        public string Status { get; set; }
+        public string Status { get; set; } = OrderStatus.PENDING.ToString();
     }
 }

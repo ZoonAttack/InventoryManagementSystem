@@ -37,6 +37,8 @@ namespace ProductsManagement.Controllers
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var orders = await _dbContext.Orders
+                .Include(x => x.User)
+                .Include(x => x.Payment)
                 .Where(x => x.UserId == userId)
                 .Select(x => x.ToOrderSummaryDto())
                 .ToListAsync();
@@ -121,6 +123,8 @@ namespace ProductsManagement.Controllers
                 _dbContext.Invoices.Add(invoice);
                 //5 - save order, payment, and invoice in database
                 await _dbContext.SaveChangesAsync();
+                //TO DO 
+                //Send email with invoice pdf attached.
                 return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order.ToOrderDetailsDto());
             }
             catch (Exception ex)
@@ -173,6 +177,7 @@ namespace ProductsManagement.Controllers
 
 
         [HttpGet("invoice/{orderId}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> DownloadInvoice(int orderId)
         {
             var order = await _dbContext.Orders
