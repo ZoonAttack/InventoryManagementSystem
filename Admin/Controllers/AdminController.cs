@@ -8,6 +8,7 @@ using Shared.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
+using System.Reflection;
 
 namespace Admin.Controllers
 {
@@ -176,7 +177,11 @@ namespace Admin.Controllers
             if (!result.Success) return NotFound(result.Message);
             var dto = new CreateOrderDto
             {
-                OrderItems = result.Data.OrderItems,
+                OrderItems = result.Data.OrderItems.Select(x => new CreateOrderItemDto
+                {
+                    ProductId = x.ProductId,
+                    Quantity = x.Quantity,
+                }).ToList(),
                 ShippingAddress = result.Data.ShippingAddress,
                 PaymentMethod = result.Data.Payment.PaymentMethod,
                 Status = result.Data.Status.ToString()
@@ -196,6 +201,8 @@ namespace Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateOrder(int id, CreateOrderViewModel dto)
         {
+            Console.WriteLine($"Total items received: {dto.Order.OrderItems.Count}");
+
             var result = await _apiCall.UpdateOrderAsync(dto.Order, id);
             if (!result.Success)
             {

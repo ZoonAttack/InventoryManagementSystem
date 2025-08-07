@@ -9,11 +9,11 @@ using ProductsManagement.Context;
 
 #nullable disable
 
-namespace ProductsManagement.Migrations
+namespace API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250728224514_Init")]
-    partial class Init
+    [Migration("20250807145143_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -249,9 +249,6 @@ namespace ProductsManagement.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Id")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")

@@ -67,10 +67,8 @@ namespace ProductsManagement.Controllers
                 return Unauthorized(new { errors = new[] { "Invalid credentials" } });
             }
 
-            return BadRequest(new
-            {
-                errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)
-            });
+            _logger.LogWarning("Model state is invalid during login: {Errors}", string.Join(", ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)));
+            return BadRequest("Invalid model");
         }
 
         [HttpPost("register")]
@@ -92,10 +90,12 @@ namespace ProductsManagement.Controllers
                 }
                 else
                 {
-                    return BadRequest(new { errors = result.Errors.Select(e => e.Description) });
+                    _logger.LogError("User registration failed: {Errors}", string.Join(", ", result.Errors.Select(e => e.Description)));
+                    return BadRequest("Invalid data");
                 }
             }
-            return BadRequest(new { errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
+            _logger.LogWarning("Model state is invalid during registration: {Errors}", string.Join(", ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)));
+            return BadRequest("Invalid model state");
         }
 
 

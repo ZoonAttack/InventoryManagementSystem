@@ -100,6 +100,12 @@
             removeBtn.className = "btn btn-danger mt-2";
             removeBtn.innerHTML = "Remove";
             removeBtn.addEventListener("click", function () {
+                const allCards = document.querySelectorAll("#order-items-container .card");
+                if(allCards.length == 1)
+				{
+					showCustomAlert("You must have at least one order item. Consider going back and deleting the order instead", 3000, "warning");
+					return;
+				}
                 card.remove();
                 renumberItems();
             });
@@ -131,26 +137,34 @@
             index++;
         }
 
-        function renumberItems() {
+               function renumberItems() {
             const cards = document.querySelectorAll("#order-items-container .card");
             index = 0;
+
             cards.forEach(card => {
                 card.setAttribute("data-index", index);
                 card.querySelector(".card-title").textContent = `Order Item ${index + 1}`;
+
                 const inputs = card.querySelectorAll("select, input");
                 inputs.forEach(input => {
                     const match = input.name.match(/Order\.OrderItems\[\d+\]\.(\w+)/);
                     if (!match) return;
                     const field = match[1];
+
                     input.name = `Order.OrderItems[${index}].${field}`;
                     input.id = `Order_OrderItems_${index}__${field}`;
-                    if (input.labels && input.labels.length > 0) {
-                        input.labels[0].setAttribute("for", input.id);
+
+                    // Update label's for attribute
+                    const label = card.querySelector(`label[for="${input.id}"]`);
+                    if (label) {
+                        label.setAttribute("for", input.id);
                     }
                 });
+
                 index++;
             });
         }
+
 
         document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("add-item-btn").addEventListener("click", () => addOrderItem());

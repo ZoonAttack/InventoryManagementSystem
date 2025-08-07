@@ -39,7 +39,7 @@ namespace ProductsManagement
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new() { Title = "Your API", Version = "v1" });
+                c.SwaggerDoc("v1", new() { Title = "IMS API", Version = "v1.0" });
 
                 // Add JWT Authentication
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
