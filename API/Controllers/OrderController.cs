@@ -72,40 +72,53 @@ namespace ProductsManagement.Controllers
         {
             try
             {
-                //1- Calculate total amount
-                var totalAmount = 0.0;
-                foreach (var item in dto.OrderItems)
+                // ✅ Group and merge order items by ProductId
+                var groupedItems = dto.OrderItems
+                    .GroupBy(x => x.ProductId)
+                    .Select(g => new
+                    {
+                        ProductId = g.Key,
+                        Quantity = g.Sum(x => x.Quantity)
+                    }).ToList();
+
+                double totalAmount = 0.0;
+                var orderItems = new List<OrderItem>();
+
+                foreach (var item in groupedItems)
                 {
-                    Product? product = await _dbContext.Products.FindAsync(item.ProductId);
+                    var product = await _dbContext.Products.FindAsync(item.ProductId);
                     if (product == null)
                     {
                         return BadRequest($"Product with ID {item.ProductId} not found.");
                     }
-                    totalAmount += product.Price * item.Quantity;
-                    item.ProductId = product.Id;
-                    item.ImageURL = product.ImageUrl;
-                }
-                //2- create the order
-                string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                Order order = new Order()
-                {
-                    UserId = userId,
-                    Status = OrderStatus.PENDING,
-                    CreatedAt = DateTime.UtcNow,
-                    TotalAmount = totalAmount,
-                    ShippingAddress = dto.ShippingAddress,
-                    OrderItems = dto.OrderItems.Select(item => new OrderItem
+                    totalAmount += product.Price * item.Quantity;
+
+                    orderItems.Add(new OrderItem
                     {
                         ProductId = item.ProductId,
                         Quantity = item.Quantity,
-                        UnitPrice = _dbContext.Products.SingleOrDefault(x => x.Id == item.ProductId)?.Price ?? 0
-                    }).ToList()
+                        UnitPrice = product.Price
+                    });
+                }
+
+                // ✅ Create the order
+                string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var order = new Order
+                {
+                    UserId = userId,
+                    Status = OrderStatus.PENDING,
+                    CreatedAt = DateTime.Now,
+                    TotalAmount = totalAmount,
+                    ShippingAddress = dto.ShippingAddress,
+                    OrderItems = orderItems
                 };
+
                 _dbContext.Orders.Add(order);
-                await _dbContext.SaveChangesAsync(); // Save to get the order ID for the next steps
-                //3- create the payment(cash does not need api)
-                Payment payment = new()
+                await _dbContext.SaveChangesAsync(); // Save to get the order ID
+
+                // ✅ Create payment
+                var payment = new Payment
                 {
                     Method = (PaymentMethods)Enum.Parse(typeof(PaymentMethods), dto.PaymentMethod),
                     Amount = totalAmount,
@@ -113,25 +126,27 @@ namespace ProductsManagement.Controllers
                     Order = order
                 };
                 _dbContext.Payments.Add(payment);
-                //4- create the invoice
-                Invoice invoice = new()
+
+                // ✅ Create invoice
+                var invoice = new Invoice
                 {
                     IssuedAt = DateTime.UtcNow,
                     Order = order,
-                    PdfPath = "LATER"
+                    PdfPath = Path.Combine(Directory.GetCurrentDirectory(), "Invoices", $"Invoice_{order.Id}.pdf"),
                 };
                 _dbContext.Invoices.Add(invoice);
-                //5 - save order, payment, and invoice in database
+
+                // ✅ Save all
                 await _dbContext.SaveChangesAsync();
-                //TO DO 
-                //Send email with invoice pdf attached.
+
+                // TO DO: Send email with invoice PDF attached
+
                 return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order.ToOrderDetailsDto());
             }
             catch (Exception ex)
             {
                 return BadRequest($"An error occurred while creating the order: {ex.Message}");
             }
-
         }
 
         [HttpPut("update/{id}")]
@@ -146,17 +161,45 @@ namespace ProductsManagement.Controllers
                 .Include(x => x.Payment)
                 .Where(x => x.Id == id)
                 .FirstOrDefaultAsync();
+
             if (order == null)
             {
                 return NotFound($"Order with ID {id} not found.");
             }
+
+            // Update order metadata
             order.Status = (OrderStatus)Enum.Parse(typeof(OrderStatus), dto.Status);
             order.ShippingAddress = dto.ShippingAddress;
             order.Payment.Method = (PaymentMethods)Enum.Parse(typeof(PaymentMethods), dto.PaymentMethod);
+
+            // Deduplicate order items by ProductId and sum quantities
+            var groupedItems = dto.OrderItems
+                .GroupBy(x => x.ProductId)
+                .Select(g => new
+                {
+                    ProductId = g.Key,
+                    Quantity = g.Sum(x => x.Quantity)
+                }).ToList();
+
+            // Create new OrderItems list
+            order.OrderItems = groupedItems.Select(g =>
+                new OrderItem
+                {
+                    OrderId = order.Id,
+                    ProductId = g.ProductId,
+                    Quantity = g.Quantity,
+                    UnitPrice = _dbContext.Products
+                        .Where(p => p.Id == g.ProductId)
+                        .Select(p => p.Price)
+                        .FirstOrDefault() // returns 0 if not found
+                }).ToList();
+
             _dbContext.Orders.Update(order);
             await _dbContext.SaveChangesAsync();
+
             return Ok(order.ToOrderSummaryDto());
         }
+
 
         [HttpDelete("destroy/{id}")]
         [Authorize(Policy = "AdminOnly")]

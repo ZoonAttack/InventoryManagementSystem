@@ -118,6 +118,8 @@
         </button>
     </nav>
 
+    <div id="custom-alert-container" style="position: fixed; top: 20px; right: 20px; z-index: 1050;"></div>
+
     <!-- Main Content -->
     <div class="main-content">
         @RenderBody()
@@ -136,5 +138,50 @@
             icon.textContent = sidebar.classList.contains('collapsed') ? '→' : '←';
         }
     </script>
+
+    <script>
+        function showCustomAlert(message, duration = 3000, type = "info") {
+            const container = document.getElementById("custom-alert-container");
+
+            const alertBox = document.createElement("div");
+            alertBox.className = `custom-alert custom-alert-${type}`;
+            alertBox.textContent = message;
+
+            Object.assign(alertBox.style, {
+                padding: "12px 20px",
+                borderRadius: "5px",
+                marginTop: "10px",
+                boxShadow: "0 0 10px rgba(0,0,0,0.1)",
+                opacity: "1",
+                transition: "opacity 0.5s ease-out"
+            });
+
+            switch (type) {
+                case "success":
+                    alertBox.style.backgroundColor = "#198754";
+                    alertBox.style.color = "#fff";
+                    break;
+                case "error":
+                    alertBox.style.backgroundColor = "#dc3545";
+                    alertBox.style.color = "#fff";
+                    break;
+                case "warning":
+                    alertBox.style.backgroundColor = "#ffc107";
+                    alertBox.style.color = "#000";
+                    break;
+                default:
+                    alertBox.style.backgroundColor = "#343a40";
+                    alertBox.style.color = "#fff";
+            }
+
+            container.appendChild(alertBox);
+
+            setTimeout(() => {
+                alertBox.style.opacity = "0";
+                setTimeout(() => alertBox.remove(), 500);
+            }, duration);
+        }
+    </script>
+
 </body>
 </html>
