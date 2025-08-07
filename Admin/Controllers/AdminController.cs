@@ -288,9 +288,9 @@ namespace Admin.Controllers
         {
             return View();
         }
+        
         [HttpPost]
         [Authorize]
-
         public async Task<IActionResult> CreateCategory(CreateCategoryDto dto)
         {
             var result = await _apiCall.CreateCategoryAsync(dto);

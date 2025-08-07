@@ -23,17 +23,21 @@ public class PDFGenerator : IDocument
 
     [Obsolete]
     public void Compose(IDocumentContainer container)
+    {
+        container.Page(page =>
         {
-            container.Page(page =>
-            {
-                page.Margin(30);
-                page.Size(PageSizes.A4);
+            page.Margin(40);
+            page.Size(PageSizes.A4);
+            page.DefaultTextStyle(x => x.FontSize(12).FontColor(Colors.Black));
 
-                page.Header().Row(row =>
+            page.Header()
+                .PaddingBottom(10)
+                .Row(row =>
                 {
-                    row.RelativeItem().Stack(stack =>
+                    row.RelativeColumn().Stack(stack =>
                     {
-                        stack.Item().Text($"Invoice #{_orderId}").FontSize(20).Bold();
+                        stack.Item().Text($"Invoice").FontSize(24).Bold().FontColor(Colors.Blue.Darken2);
+                        stack.Item().Text($"#{_orderId}").FontSize(14).SemiBold();
                     });
 
                     row.RelativeColumn().AlignRight().Stack(stack =>
@@ -43,15 +47,37 @@ public class PDFGenerator : IDocument
                     });
                 });
 
-                page.Content().Element(ComposeTable);
-
-                page.Footer().AlignRight().Text(text =>
+            page.Content()
+                .Padding(10)
+                .Border(1)
+                .BorderColor(Colors.Grey.Medium)
+                .Column(column =>
                 {
-                    var total = _orderItems.Sum(i => i.Quantity * i.UnitPrice);
-                    text.Span($"Total: {total:C}").Bold().FontSize(14);
+                    column.Item().PaddingBottom(5).Text($"Bill To: {_customerName}").SemiBold();
+
+                    column.Item().Element(ComposeTable);
+
+                    // ملخص المجموع
+                    column.Item().AlignRight().PaddingTop(10).Stack(stack =>
+                    {
+                        var subtotal = _orderItems.Sum(i => i.Quantity * i.UnitPrice);
+                        stack.Item().Row(row =>
+                        {
+                            row.RelativeColumn().AlignRight().Text("Total (USD):").Bold();
+                            row.ConstantColumn(100).AlignRight().Text($"$ {subtotal:F2}").Bold();
+                        });
+                    });
+
                 });
-            });
-        }
+
+            page.Footer()
+                .AlignCenter()
+                .Text("Thank you for your business!")
+                .FontSize(10)
+                .Italic()
+                .FontColor(Colors.Grey.Darken2);
+        });
+    }
 
     void ComposeTable(IContainer container)
     {
@@ -59,29 +85,35 @@ public class PDFGenerator : IDocument
         {
             table.ColumnsDefinition(columns =>
             {
-                columns.RelativeColumn(3); // Product
-                columns.RelativeColumn(1); // Qty
-                columns.RelativeColumn(2); // Price
-                columns.RelativeColumn(2); // Subtotal
+                columns.RelativeColumn(4); 
+                columns.RelativeColumn(1); 
+                columns.RelativeColumn(2); 
+                columns.RelativeColumn(2); 
             });
 
-            // Header
             table.Header(header =>
             {
-                header.Cell().Text("Product").Bold();
-                header.Cell().Text("Qty").Bold();
-                header.Cell().Text("Unit Price").Bold();
-                header.Cell().Text("Subtotal").Bold();
+                header.Cell().Border(1).BorderColor(Colors.Grey.Medium).Background(Colors.Grey.Lighten3).Padding(5).Text("Product").Bold();
+                header.Cell().Border(1).BorderColor(Colors.Grey.Medium).Padding(5).AlignCenter().Text("Qty").Bold();
+                header.Cell().Border(1).BorderColor(Colors.Grey.Medium).Padding(5).AlignRight().Text("Unit Price").Bold();
+                header.Cell().Border(1).BorderColor(Colors.Grey.Medium).Padding(5).AlignRight().Text("Subtotal").Bold();
             });
 
-            // Rows
             foreach (var item in _orderItems)
             {
-                table.Cell().Text(item.ProductName);
-                table.Cell().Text(item.Quantity.ToString());
-                table.Cell().Text($"{item.UnitPrice:C}");
-                table.Cell().Text($"{(item.Quantity * item.UnitPrice):C}");
+                table.Cell().Border(1).BorderColor(Colors.Grey.Medium).Padding(5).Text(item.ProductName);
+                table.Cell().Border(1).BorderColor(Colors.Grey.Medium).Padding(5).AlignCenter().Text(item.Quantity.ToString());
+                table.Cell().Border(1).BorderColor(Colors.Grey.Medium).Padding(5).AlignRight().Text($"$ {item.UnitPrice:F2}");
+                table.Cell().Border(1).BorderColor(Colors.Grey.Medium).Padding(5).AlignRight().Text($"$ {(item.Quantity * item.UnitPrice):F2}");
             }
+
+            table.Footer(footer =>
+            {
+                footer.Cell().ColumnSpan(4).LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
+            });
         });
     }
+
+
+
 }
