@@ -43,6 +43,7 @@ It consists of two main components:
 - **Backend:** ASP.NET Web API, ASP.NET MVC
 - **Frontend:** HTML, CSS, JavaScript
 - **Email Service:** [Resend](https://resend.com) (for password reset and email notifications)
+- **PDF Generation:** [QuestPDF](https://www.questpdf.com) – for invoice creation in PDF format
 - **Architecture:** RESTful API with separate admin dashboard
 - **Other:** Invoice generation system for orders
 
